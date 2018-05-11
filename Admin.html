@@ -79,18 +79,21 @@
                         <label for="personImageUrl">Image URL</label>
                         <input type="text" class="form-control" id="personImageUrl" placeholder="Type in URL">
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="personImageUrl2">2nd Image URL</label>
                         <input type="text" class="form-control" id="personImageUrl2" placeholder="(OPTIONAL)">
                     </div>
                     <div class="form-group">
                         <label for="personImageUrl3">3rd Image URL</label>
                         <input type="text" class="form-control" id="personImageUrl3" placeholder="(OPTIONAL)">
-                    </div>
+                    </div> -->
                     <button type="submit" class="btn btn-secondary" id="submit">Submit</button>
+                    <button type="submit" class="btn btn-success" id="train">Analyze images</button>
                 </form>
             </div>
         </div>
+        <div class='row' id='row2'></div>
+        <div class='row' id='row3'></div>
     </div>
 
 <!-- ***************** -->
@@ -114,7 +117,7 @@
 
 // INITIALIZE GLOBAL VARIABLES
 var apiKey = '10f397a3144b4015b61663d5d274889c';
-var personName ='Hulk';
+var personName ='';
 var personId ='';
 var personImageUrl='';
 var persistedFaceId='';
@@ -128,14 +131,21 @@ var colNum = 0;
 for (var i=0; i<10;i++){
     $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row1');
 };
-
+for (var i=10; i<22;i++){
+    $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row2');
+};
+for (var i=22; i<34;i++){
+    $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row3');
+};
 
 // fillout database function to be called on new submit and on page load
 function fillOutHtmlDataBase(){
     $('<div>').text(personName).appendTo('#col-'+ colNum);
     $('<div>').text(personId).addClass('idText').appendTo('#col-'+ colNum);
+    $('<hr>').appendTo('#col-'+ colNum);
     $("<img>").attr("src", personImageUrl).appendTo('#col-'+ colNum);
     $('<div>').text(persistedFaceId).addClass('idText').appendTo('#col-'+ colNum);
+    $('<hr>').appendTo('#col-'+ colNum);
     $("<img>").attr("src", personImageUrl2).appendTo('#col-'+ colNum);
     $('<div>').text(persistedFaceId2).addClass('idText').appendTo('#col-'+ colNum);
     $("<img>").attr("src", personImageUrl3).appendTo('#col-'+ colNum);
@@ -159,41 +169,79 @@ database.ref().orderByChild("personName").on("child_added", function(snapshot) {
     console.log("The read failed: " + errorObject.code);
 });
 
+
 // functions and rest of script below:
 $(document).on("click", '#submit', function(event) {
     event.preventDefault();
     personName = $("#personName").val().trim();
     personImageUrl = $("#personImageUrl").val().trim();
-    personImageUrl2 = $("#personImageUrl2").val().trim();
-    personImageUrl3 = $("#personImageUrl3").val().trim();
+    // personImageUrl2 = $("#personImageUrl2").val().trim();
+    // personImageUrl3 = $("#personImageUrl3").val().trim();
     //checks if each input has a value
     if (personName === "") {alert('Please type in a character name')};
     if (personImageUrl === "") {alert('please type in a url')};
-    database.ref().push({
-        personName: personName,
-        personId: '',
-        personImageUrl: personImageUrl,
-        persistedFaceId: "" ,
-        personImageUrl2: personImageUrl2,
-        persistedFaceId2: '',
-        personImageUrl3: personImageUrl3,
-        persistedFaceId3: ''
-    });
-    $("#personName").val('');
-    $("#personImageUrl").val('');
-    $("#personImageUrl2").val('');
-    $("#personImageUrl3").val('');
-});
-var dataBody = JSON.stringify({
+    // azure API
+    
+    function firebasePush(){
+        database.ref().push({
+            personName: personName,
+            personId: personId,
+            personImageUrl: personImageUrl,
+            persistedFaceId: persistedFaceId ,
+            personImageUrl2: personImageUrl2,
+            persistedFaceId2: '',
+            personImageUrl3: personImageUrl3,
+            persistedFaceId3: '',
+        });
+        $("#personName").val('');
+        $("#personImageUrl").val('');
+        $("#personImageUrl2").val('');
+        $("#personImageUrl3").val('');
+        databaseNum++
+    };    
+    
+    function addimage(){
+        var imageBody = JSON.stringify({
+        "url": personImageUrl
+        });
+
+        $(function() {
+            var params = {
+                // Request parameters
+            };
+        
+            $.ajax({
+                url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons/"+personId+"/persistedFaces?" + $.param(params),
+                beforeSend: function(xhrObj){
+                    // Request headers
+                    xhrObj.setRequestHeader("Content-Type","application/json");
+                    xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
+                },
+                type: "POST",
+                // Request body
+                data: imageBody,
+            })
+            .done(function(data) {
+                // alert("success");
+                console.log(data.persistedFaceId);
+                persistedFaceId = data.persistedFaceId
+                firebasePush();
+            })
+            .fail(function() {
+                alert("error");
+            });
+        });
+    };
+
+    var personBody = JSON.stringify({
     "name": personName,
     "userData": "User-provided data attached to the person."
     });
 
- $(function() {
+    $(function() {
         var params = {
             // Request parameters
         };
-      
         $.ajax({
             url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons?" + $.param(params),
             beforeSend: function(xhrObj){
@@ -203,15 +251,42 @@ var dataBody = JSON.stringify({
             },
             type: "POST",
             // Request body
-            data: dataBody,
+            data: personBody,
         })
         .done(function(data) {
-            alert("success");
+            // alert("success");
+            console.log(data.personId);
+            personId = data.personId;
+            addimage();
         })
         .fail(function() {
             alert("error");
         });
     });
+});
 
+var trainBody = JSON.stringify({
+    });
+
+$(document).on("click", '#train', function(event) {
+        event.preventDefault();  
+        $.ajax({
+            url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/train",
+            beforeSend: function(xhrObj){
+                // Request headers
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
+            },
+            type: "POST",
+            // Request body
+            data: '',
+        })
+        .done(function(data) {
+            console.log(data);
+        })
+        .fail(function(error) {
+            console.log(error);
+        });
+   
+});
 </script>
 </body>
