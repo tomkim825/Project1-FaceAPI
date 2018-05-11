@@ -131,7 +131,7 @@ var constraints = {
             contentType: 'application/octet-stream',
 
             // Request body.
-            data: '{"url": ' + '"' + sourceImageUrl + '"}',
+            data: makeblob(userImage),
         })
 
         .done(function(data) {
