@@ -54,6 +54,10 @@ database.ref().orderByChild("personName").on("child_added", function(snapshot) {
 // once API calls are done, postResult() called to update DOM
 function postResults() {
     $('#resultDiv').empty();
+    $('#result2Div').empty();
+    $('#result3Div').empty();
+    $('#result4Div').empty();
+    $('#result5Div').empty();
     $('#startSceen').css('display','none');
     $('#userImageUrl').val('');
     for ( var i = 0 ; i< characterDatabase.length ; i++){
