@@ -15,7 +15,6 @@
 <!-- *******************-->
     <style>
     @import url(https://fonts.googleapis.com/css?family=Work+Sans:300,600);
-
     body{
         font-family: 'Work Sans', sans-serif;
         font-size:1.8vmin;
@@ -25,6 +24,7 @@
         text-decoration: none;
         margin:2vmin; 
         text-align:center;
+        cursor: pointer;
     }
     nav{
         font-size: 6vmin;
@@ -34,28 +34,36 @@
     img{
         width:100%;
     }
+    .col-md-1:hover{
+        transform: scale(2.5);
+        transform-origin: top;
+        z-index: 99;
+        position:relative;
+    }
+
     .idText{
         font-size: 1vmin;
         color:gray;
     }
-    #mainBody,
     .col-md-1,
     .col-md-2{
         border:1px solid gray;
         background: black; 
+        padding:0;
+        width:99%
     }
-      
+    #missingName,
+    #missingURL {
+        display:none;
+    }
     </style>
 <!-- ***************** -->
 <!-- Styling ends here -->
 <!-- *****************-->
 
-
 <!-- ***************** -->
 <!--   HTML Body here  -->
 <!-- ***************** -->
-
-
     <nav class="navbar fixed-top">
         <!-- upper leftside title -->
         <div class="navbar-logo">Admin</div>
@@ -90,10 +98,14 @@
                     <button type="submit" class="btn btn-secondary" id="submit">Submit</button>
                     <button type="submit" class="btn btn-success" id="train">Analyze images</button>
                 </form>
+                <div class="alert alert-warning" id='missingName'>
+                    <strong>Info Missing!</strong> Please Type in Character Name.
+                </div>
+                <div class="alert alert-warning" id='missingURL'>
+                    <strong>Info Missing!</strong> Please Type in Image URL.
+                </div>
             </div>
         </div>
-        <div class='row' id='row2'></div>
-        <div class='row' id='row3'></div>
     </div>
 
 <!-- ***************** -->
@@ -126,16 +138,23 @@ var persistedFaceId2='';
 var personImageUrl3='';
 var persistedFaceId3='';
 var colNum = 0;
+var personCount=0;
+var rowCount = 2
 
-// create initial 10 character columns to be filled
+// create initial 10 character columns to be filled (1st 2 columns are reserved for input form)
 for (var i=0; i<10;i++){
     $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row1');
 };
-for (var i=10; i<22;i++){
-    $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row2');
-};
-for (var i=22; i<34;i++){
-    $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row3');
+
+// function to add additional rows and columns to grid as needed once existing ones fill up
+function addRows() {
+    if ((personCount-10)%12 === 0){
+        $('<row>').addClass('row').attr('id','row'+rowCount).appendTo('#mainBody');
+        for (var i=personCount; i<(personCount+12);i++){
+            $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row'+rowCount);
+        };
+        rowCount++
+    }
 };
 
 // fillout database function to be called on new submit and on page load
@@ -145,11 +164,11 @@ function fillOutHtmlDataBase(){
     $('<hr>').appendTo('#col-'+ colNum);
     $("<img>").attr("src", personImageUrl).appendTo('#col-'+ colNum);
     $('<div>').text(persistedFaceId).addClass('idText').appendTo('#col-'+ colNum);
-    $('<hr>').appendTo('#col-'+ colNum);
-    $("<img>").attr("src", personImageUrl2).appendTo('#col-'+ colNum);
-    $('<div>').text(persistedFaceId2).addClass('idText').appendTo('#col-'+ colNum);
-    $("<img>").attr("src", personImageUrl3).appendTo('#col-'+ colNum);
-    $('<div>').text(persistedFaceId3).addClass('idText').appendTo('#col-'+ colNum);
+    // $('<hr>').appendTo('#col-'+ colNum);
+    // $("<img>").attr("src", personImageUrl2).appendTo('#col-'+ colNum);
+    // $('<div>').text(persistedFaceId2).addClass('idText').appendTo('#col-'+ colNum);
+    // $("<img>").attr("src", personImageUrl3).appendTo('#col-'+ colNum);
+    // $('<div>').text(persistedFaceId3).addClass('idText').appendTo('#col-'+ colNum);
     colNum++;
 };
 
@@ -164,6 +183,8 @@ database.ref().orderByChild("personName").on("child_added", function(snapshot) {
     persistedFaceId2= snapshot.val().persistedFaceId2;
     personImageUrl3 = snapshot.val().personImageUrl3;
     persistedFaceId3= snapshot.val().persistedFaceId3;
+    personCount++;
+    addRows();
     fillOutHtmlDataBase();
 }, function(errorObject) {
     console.log("The read failed: " + errorObject.code);
@@ -173,15 +194,18 @@ database.ref().orderByChild("personName").on("child_added", function(snapshot) {
 // functions and rest of script below:
 $(document).on("click", '#submit', function(event) {
     event.preventDefault();
+    $('#missingName').css('display','none');
+    $('#missingURL').css('display','none')
     personName = $("#personName").val().trim();
     personImageUrl = $("#personImageUrl").val().trim();
     // personImageUrl2 = $("#personImageUrl2").val().trim();
     // personImageUrl3 = $("#personImageUrl3").val().trim();
+
     //checks if each input has a value
-    if (personName === "") {alert('Please type in a character name')};
-    if (personImageUrl === "") {alert('please type in a url')};
-    // azure API
-    
+    if (personName === "") {$('#missingName').css('display','block')};
+    if (personImageUrl === "") {$('#missingURL').css('display','block')};
+        
+    // pushes info to firebase after AJAX calls return Ids. NESTED into AJAX promise of addImage()
     function firebasePush(){
         database.ref().push({
             personName: personName,
@@ -197,21 +221,12 @@ $(document).on("click", '#submit', function(event) {
         $("#personImageUrl").val('');
         $("#personImageUrl2").val('');
         $("#personImageUrl3").val('');
-        databaseNum++
     };    
     
-    function addimage(){
-        var imageBody = JSON.stringify({
-        "url": personImageUrl
-        });
-
-        $(function() {
-            var params = {
-                // Request parameters
-            };
-        
+    // second AJAX call to add image to person ID created below (nested in ajax call below)
+    function addimage(){      
             $.ajax({
-                url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons/"+personId+"/persistedFaces?" + $.param(params),
+                url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons/"+personId+"/persistedFaces?",
                 beforeSend: function(xhrObj){
                     // Request headers
                     xhrObj.setRequestHeader("Content-Type","application/json");
@@ -219,7 +234,9 @@ $(document).on("click", '#submit', function(event) {
                 },
                 type: "POST",
                 // Request body
-                data: imageBody,
+                data: JSON.stringify({
+                    "url": personImageUrl
+                }),
             })
             .done(function(data) {
                 // alert("success");
@@ -228,22 +245,12 @@ $(document).on("click", '#submit', function(event) {
                 firebasePush();
             })
             .fail(function() {
-                alert("error");
+                console.log("error");
             });
-        });
     };
-
-    var personBody = JSON.stringify({
-    "name": personName,
-    "userData": "User-provided data attached to the person."
-    });
-
-    $(function() {
-        var params = {
-            // Request parameters
-        };
-        $.ajax({
-            url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons?" + $.param(params),
+        // first AJAX call - creates person id
+          $.ajax({
+            url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons?",
             beforeSend: function(xhrObj){
                 // Request headers
                 xhrObj.setRequestHeader("Content-Type","application/json");
@@ -251,22 +258,19 @@ $(document).on("click", '#submit', function(event) {
             },
             type: "POST",
             // Request body
-            data: personBody,
+            data: JSON.stringify({
+                "name": personName,
+                "userData": "User-provided data attached to the person."
+                }),
         })
         .done(function(data) {
-            // alert("success");
-            console.log(data.personId);
             personId = data.personId;
             addimage();
         })
         .fail(function() {
-            alert("error");
+            console.log("error");
         });
-    });
 });
-
-var trainBody = JSON.stringify({
-    });
 
 $(document).on("click", '#train', function(event) {
         event.preventDefault();  
