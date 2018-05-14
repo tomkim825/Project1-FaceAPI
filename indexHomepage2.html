@@ -22,6 +22,13 @@
         <!-- <p class="text-muted">Unmask Your Inner Hero</p> -->
       </div>
     </header>
+
+
+
+
+
+
+
     <div class="container-fluid">
       <div class="row spacer">
         <div class="col-md-12">
@@ -29,6 +36,12 @@
         </div>
       </div>
     </div>
+
+
+
+
+
+
     <div class="container mainContent">
       
      
@@ -40,31 +53,37 @@
       </div>     -->
       <div class="row">
         <div class="col-md-12" id="resultDiv">
-        <h2>Upload</h2>
-        <img class="silhouette img-fluid" id="result1" src="assets/images/user-silhouette.png" width="225px">
-        <div class='row'>
-            <div class="col-md-12">
-              <div class="col-md-3" id="result2Div"></div>
-              <div class="col-md-3" id="result3Div"></div>
-              <div class="col-md-3" id="result4Div"></div>
-              <div class="col-md-3" id="result5Div"></div>
-            </div>
-        </div>  
+          <h2>Upload</h2>
+          <img class="silhouette img-fluid" id="result1" src="assets/images/user-silhouette.png" width="225px">
         </div>
+      </div>
+
+      <div class="row">
         <div class="col-md-12">
-          <form>
-            <div class="form-group">
-                <!-- <label for="userImageUrl">URL for your image</label> -->
-                <input type="text" class="form-control text-center userImageUrl" id="userImageUrl" placeholder="Copy and Paste Your Image URL Here">
-            </div>
-
-            <button type="submit" class="btn btn-secondary submit-button" id="submit">Submit</button>
-        </form>
+          <div class="col-md-3" id="result2Div"></div>
+          <div class="col-md-3" id="result3Div"></div>
+          <div class="col-md-3" id="result4Div"></div>
+          <div class="col-md-3" id="result5Div"></div>
         </div>
-    </div>
-   
+      </div>
 
-    <!--Footer-->
+
+      <div class="row">
+      <div class="col-md-12">
+        <form>
+          <div class="form-group imageUpload">
+              <label for="userImageUrl" class="submit-label">URL for your image (JPEG, PNG, GIF, BMP, Max file size: 4MB)</label>
+              <input type="text" class="form-control text-left userImageUrl" id="userImageUrl" onfocus="this.placeholder = ''" placeholder="Copy and paste image URL">
+          </div>
+
+          <button type="submit" class="btn btn-secondary submit-button" id="submit">Submit</button>
+      </form>
+      </div>
+    </div>
+
+
+
+
     <!--Camera Test-->
     <!-- <video id="screenshot-video" class="videostream" autoplay></video>
     <img id="screenshot-img">
@@ -97,12 +116,12 @@
 
 
 
-
+<!--Footer-->
 <footer class="footer">
     <div class="container">
       <span class="text-muted">Place sticky footer content here.</span>
     </div>
-  </footer>
+</footer>
 
 
 

@@ -10,12 +10,14 @@ body {
  background-color: #000;
  font-family: 'Roboto', sans-serif;
  margin-bottom: 60px; /*Footer Related*/
+ min-height: calc(100vh - 60px);
 
 }
 .mainContent {
   background-color: #0c0c0c;
   background-size: auto;
   max-width: 980px;
+  min-height: calc(100vh - 282px);
 }
 
 .spacer{
@@ -32,14 +34,23 @@ header {
   border: 5px solid #ccc;
 }
 
-.userImageUrl {
+form {
+  margin-top: 50px;
+  color: #ccc;
+}
 
-  width: 400px;
+.imageUpload {
+  width: 500px;
   margin: 0 auto;
+  text-align: left;
+}
+
+.submit-label {
+  margin-left: 15px;
 }
 
 .submit-button {
-  margin-bottom: 100px;
+  margin-top: 25px;
 }
 
 .titleContainer {
