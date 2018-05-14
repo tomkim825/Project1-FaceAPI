@@ -225,8 +225,8 @@ $(document).on("click", '#submit', function(event) {
     personImageUrl = $("#personImageUrl").val().trim();
 
     //checks if each input has a value
-    if (personName === "") {$('#missingName').css('display','block');setTimeout(function(){$('#missingName').css('display','none');},3000);};
-    if (personImageUrl === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},3000);};
+    if (personName === "") {$('#missingName').css('display','block');setTimeout(function(){$('#missingName').css('display','none');},5000);};
+    if (personImageUrl === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},5000);};
         
     // pushes info to firebase after AJAX calls return Ids. NESTED into AJAX promise of addImage()
     function firebasePush(){
@@ -265,13 +265,13 @@ $(document).on("click", '#submit', function(event) {
                 persistedFaceId = data.persistedFaceId;
                 firebasePush();
                 $('#successMessage').css('display','block');
-                setTimeout(function(){$('#successMessage').css('display','none');},3000);
+                setTimeout(function(){$('#successMessage').css('display','none');},5000);
             })
             .fail(function(error) {
                 console.log("error");
                 console.log(error);
                 $('#errorMessage').css('display','block');
-                setTimeout(function(){$('#errorMessage').css('display','none');},3000);
+                setTimeout(function(){$('#errorMessage').css('display','none');},5000);
             });
     };
         // first AJAX call - creates person id
@@ -297,7 +297,7 @@ $(document).on("click", '#submit', function(event) {
             console.log("error");
             console.log(error);
             $('#errorMessage').css('display','block');
-            setTimeout(function(){$('#errorMessage').css('display','none');},3000);
+            setTimeout(function(){$('#errorMessage').css('display','none');},5000);
         });
 });
 
@@ -316,12 +316,12 @@ $(document).on("click", '#train', function(event) {
         .done(function(data) {
             console.log(data);
             $('#successMessage').css('display','block');
-            setTimeout(function(){$('#successMessage').css('display','none');},3000);
+            setTimeout(function(){$('#successMessage').css('display','none');},5000);
         })
         .fail(function(error) {
             console.log(error);
             $('#errorMessage').css('display','block');
-            setTimeout(function(){$('#errorMessage').css('display','none');},3000);
+            setTimeout(function(){$('#errorMessage').css('display','none');},5000);
         });
    
 });
@@ -348,13 +348,13 @@ function addAdditionalImage(personId,personImageUrl,firebaseUrl,firebaseId){
             database.ref().child(firebaseKey).child(firebaseUrl).set(personImageUrl);
             database.ref().child(firebaseKey).child(firebaseId).set(persistedFaceId);
             $('#successMessage').css('display','block');
-            setTimeout(function(){$('#successMessage').css('display','none');},3000);
+            setTimeout(function(){$('#successMessage').css('display','none');},5000);
         })
         .fail(function(error) {
             console.log("error");
             console.log(error);
             $('#errorMessage').css('display','block');
-            setTimeout(function(){$('#errorMessage').css('display','none');},3000);
+            setTimeout(function(){$('#errorMessage').css('display','none');},5000);
         });
 };
 
@@ -367,7 +367,7 @@ $(document).on("click", '#add2ndUrl', function(event) {
     firebaseKey = $(this).data("key");
     personImageUrl2 = $("#personImageUrl2-"+ $(this).data("inputnum")).val().trim();
     //checks if each input has a value
-    if (personImageUrl2 === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},3000);};
+    if (personImageUrl2 === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},5000);};
     addAdditionalImage(personId,personImageUrl2,'personImageUrl2','persistedFaceId2');
     $("#personImageUrl2-"+ $(this).data("inputnum")).val('');
 });
