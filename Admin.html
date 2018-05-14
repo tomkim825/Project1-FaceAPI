@@ -33,9 +33,12 @@
     }
     img{
         max-width:100%; 
-        width: 18vmin;
-        height: 12vmin;
+        width: 22vh;
+        height: 20vh;
         object-fit: contain;
+        display:block;
+        margin: 0 auto;
+
     }
     .col-md-1:hover{
         transform: scale(2.5);
@@ -184,7 +187,7 @@ function fillOutHtmlDataBase(){
         $('<input>').attr('type','text').addClass('form-control additional').attr('id',"personImageUrl3-"+colNum).attr('placeholder',"Type in URL").appendTo('#col-'+ colNum);  
         $('<button>').text('add 3rd image').addClass('btn btn-default btn-xs addAnotherImage').attr('id',"add3rdUrl").attr('data-id',personId).attr('data-key',firebaseKey).attr('data-inputnum',colNum).appendTo('#col-'+ colNum);    
     } else {
-        $('<div>').text('images full').addClass('btn btn-default btn-xs').appendTo('#col-'+ colNum);    
+        $('<div>').text('images full').css("height","3.75vh").addClass('btn btn-default btn-xs').appendTo('#col-'+ colNum);    
     };
     $("<img>").attr("src", personImageUrl).appendTo('#col-'+ colNum);
     $('<div>').text(persistedFaceId).addClass('idText').appendTo('#col-'+ colNum);
