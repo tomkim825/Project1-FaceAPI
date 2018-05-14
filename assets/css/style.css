@@ -1,18 +1,79 @@
 body {
+  /* padding-top: 70px; */
+  background-image: url("../images/main-background.jpg");
  text-align: center;
+ background-color: #000;
+ font-family: 'Roboto', sans-serif;
 
 }
+.mainContent {
+  background-color: #0c0c0c;
+  background-size: auto;
+  max-width: 980px;
+  height: 600px;
+  
+
+}
+.spacer{
+  border-top: 1px #ccc solid;
+}
+
+header {
+  background-image: url("../images/header-background.jpg");
+  height: 222px;
+}
+
+.silhouette {
+  border-radius: 50%;
+  border: 5px solid #ccc;
+}
+
+.userImageUrl {
+
+  width: 400px;
+  margin: 0 auto;
+}
+
+.submit-button {
+  margin-bottom: 100px;
+}
+
+.titleContainer {
+  background-color: #ed1b2a;
+  border-bottom: #000 solid 2px;
+}
+
 
 h1 {
-  margin-top: 50px;
+  /* width: 400px; */
+  color: #fff;
+  /* margin: 50px auto 0 auto; */
+  font-size: 5em;
+  font-style: italic;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: 'Oswald', sans-serif;
+  padding-top: 38px;
+}
+
+h2 {
+  color: #9f0000;
+  border-bottom: 1px dashed #9f0000;
+  text-align: left;
+  margin: 50px 40px;
+  padding-bottom: 5px;
+}
+
+p.subtitle{
+  color: #f78f3f;
+  font-size: 1.5em;
+  margin-top: -5px;
+  text-transform: uppercase;
+  font-style: italic;
 }
 
 .resultCard{
   margin: 50px auto 0 auto;
-}
-
-.gif {
-  margin-top: 80px;
 }
 
 .homeButton {
@@ -24,6 +85,9 @@ h1 {
   margin-top: 40px;
 }
 
-p{
-  margin-top: 40px;
+
+
+
+.futurefooter {
+  background-color: white;
 }
