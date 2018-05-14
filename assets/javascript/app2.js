@@ -58,33 +58,34 @@ function postResults() {
     $('#result3Div').empty();
     $('#result4Div').empty();
     $('#result5Div').empty();
-    $('#startSceen').css('display','none');
+    $('form').addClass('hidden');
     $('#userImageUrl').val('');
+    $('#sectionTitle').text('Result');
     for ( var i = 0 ; i< characterDatabase.length ; i++){
         if ( characterDatabase[i].personId === result1 ){
-            var userImg = $('<img>').attr('src',userImageUrl).css('width','225px').appendTo('#resultDiv');
-            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).css('width','225px').appendTo('#resultDiv');
+            var userImg = $('<img>').attr('src',userImageUrl).attr('class', 'user-image').appendTo('#resultDiv');
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class', 'result-image').appendTo('#resultDiv');
             $('#result1').css('display','none');
-            $('<h2>').text(characterDatabase[i].personName).appendTo('#resultDiv');
-            $('<h2>').text(Math.floor(result1Percent*100)+'%').appendTo('#resultDiv');
+            $('<h3>').text(characterDatabase[i].personName).appendTo('#resultDiv');
+            $('<h3>').text(Math.floor(result1Percent*100)+'%').appendTo('#resultDiv');
         };
         if ( characterDatabase[i].personId === result2 ){
-            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).css('width','75px').appendTo('#result2Div');
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo('#result2Div');
             $('<h4>').text(characterDatabase[i].personName).appendTo('#result2Div');
             $('<h4>').text(Math.floor(result2Percent*100)+'%').appendTo('#result2Div');
         };
         if ( characterDatabase[i].personId === result3 ){
-            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).css('width','75px').appendTo('#result3Div');
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo('#result3Div');
             $('<h4>').text(characterDatabase[i].personName).appendTo('#result3Div');
             $('<h4>').text(Math.floor(result3Percent*100)+'%').appendTo('#result3Div');
         };
         if ( characterDatabase[i].personId === result4 ){
-            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).css('width','75px').appendTo('#result4Div');
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo('#result4Div');
             $('<h4>').text(characterDatabase[i].personName).appendTo('#result4Div');
             $('<h4>').text(Math.floor(result4Percent*100)+'%').appendTo('#result4Div');
         };
         if ( characterDatabase[i].personId === result5 ){
-            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).css('width','75px').appendTo('#result5Div');
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo('#result5Div');
             $('<h4>').text(characterDatabase[i].personName).appendTo('#result5Div');
             $('<h4>').text(Math.floor(result5Percent*100)+'%').appendTo('#result5Div');
         };
