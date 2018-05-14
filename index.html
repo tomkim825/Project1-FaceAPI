@@ -3,9 +3,11 @@
 <html lang="EN-us">
   <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="assets//images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvel Me - Unmask Your Inner Hero</title>
+    <link href="https://fonts.googleapis.com/css?family=Oswald:700|Roboto:500" rel="stylesheet">
 
-    <title>Project 1 - Face API</title>
-  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tangerine"> -->
   <!-- <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon"> -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
@@ -13,20 +15,125 @@
 
 
   <body>
+    <header class="titleContainer">
+      <div class="col-md-12">
+        <h1>Marvel Me</h1>
+        <p class="subtitle">Unmask Your Inner Hero</p>
+        <!-- <p class="text-muted">Unmask Your Inner Hero</p> -->
+      </div>
+    </header>
+
+
+
+
+
+
+
+    <div class="container-fluid">
+      <div class="row spacer">
+        <div class="col-md-12">
+          <!--Spacer-->
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+    <div class="container mainContent">
+      
+     
+      <!-- <div class="row">
+        <div class="col-md-12">
+          <button type="button" class="btn btn-primary homeButton" id="cameraButton">Take Pic!</button>
+          <button type="button" class="btn btn-primary homeButton" id="uploadButton">Upload Pic!</button>
+        </div>  
+      </div>     -->
+      <div class="row">
+        <div class="col-md-12">
+            <h2 id="sectionTitle">Upload</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12" id="resultDiv">
+          <img class="silhouette img-fluid" id="result1" src="assets/images/user-silhouette.png" width="225px">
+        </div>
+      </div>
+
+      <div class="row">
+          <div class="col-md-3 text-center" id="result2Div"></div>
+          <div class="col-md-3 text-center" id="result3Div"></div>
+          <div class="col-md-3 text-center" id="result4Div"></div>
+          <div class="col-md-3 text-center" id="result5Div"></div>
+      </div>
+
+
+      <div class="row">
+      <div class="col-md-12">
+        <form>
+          <div class="form-group imageUpload">
+              <label for="userImageUrl" class="submit-label">URL for your image (JPEG, PNG, GIF, BMP, Max file size: 4MB)</label>
+              <input type="text" class="form-control text-left userImageUrl" id="userImageUrl" onfocus="this.placeholder = ''" placeholder="Copy and paste image URL">
+          </div>
+
+          <button type="submit" class="btn btn-secondary submit-button" id="submit">Submit</button>
+      </form>
+      </div>
+    </div>
+
+
+
 
     <!--Camera Test-->
-    <video id="screenshot-video" class="videostream" autoplay></video>
+    <!-- <video id="screenshot-video" class="videostream" autoplay></video>
     <img id="screenshot-img">
     <p><button id="screenshot-button">Take screenshot</button></p>
-    <canvas style="display:none;"></canvas>
-
+    <canvas style="display:none;"></canvas> -->
 
     <!--JQuery-->
-    <script
-    src="https://code.jquery.com/jquery-3.3.1.min.js"
-    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-    crossorigin="anonymous"></script>
-    <!--Group 3 Javscript-->
-    <script src="assets/javascript/app.js" type="text/javascript"></script>
+ 
+  </div>
+
+  <!-- <div id="startScreen">
+    <div class="row">
+        <div class="col-md-12">
+        <p>Which superhero are you?</p>
+        </div>
+    </div> -->
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--Footer-->
+<footer class="footer">
+    <div class="container">
+      <span class="text-muted">Place sticky footer content here.</span>
+    </div>
+</footer>
+
+
+
+
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+  <!--Group 3 Javscript-->
+  <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>  
+  <script src="assets/javascript/app2.js" type="text/javascript"></script>
   </body>
 </html>
