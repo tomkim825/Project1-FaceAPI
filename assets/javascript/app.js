@@ -1,152 +1,166 @@
-alert("Connected!");
-
-// Checking if user has getUser Media Functionality
-//******************************************************************************/
-
-function hasGetUserMedia() {
-    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-  }
-  
-  if (hasGetUserMedia()) {
-    // Good to go!
-    alert('getUserMedia() is supported by your browser');
-  } else {
-    alert('getUserMedia() is not supported by your browser');
-  }
-
-
-// Capture Functionality
-//******************************************************************************/
-var constraints = {
-    // What hardware we are wanting to access. Just doing plain vanilla default video: true; audio not necessary.
-    video: true,
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBKX1GXX2C_DBhXESSB3xtln6W8czM-TJY",
+    authDomain: "project1-marvelfaceapi.firebaseapp.com",
+    databaseURL: "https://project1-marvelfaceapi.firebaseio.com",
+    projectId: "project1-marvelfaceapi",
+    storageBucket: "project1-marvelfaceapi.appspot.com",
+    messagingSenderId: "259704712712"
   };
-  
+  firebase.initializeApp(config);
+  var database = firebase.database();
 
-  //Stores get base64 webcam capture in a global variable.
-  var userImage;
+// INITIALIZE GLOBAL VARIABLES
+var personName ='';
+var personId ='';
+var personImageUrl='';
+var persistedFaceId='';
+var characterDatabase=[];
+var userImageUrl;
+var userFaceId;
+var userResult;
+var result1;
+var result1Percent;
+var result2;
+var result2Percent;
+var result3;
+var result3Percent;
+var result4;
+var result4Percent;
+var result5;
+var result5Percent;
+
+// firebase: recall characters to create database of info to refer API data with
+database.ref().orderByChild("personName").on("child_added", function(snapshot) {
+    personName = snapshot.val().personName;
+    personId = snapshot.val().personId;
+    personImageUrl = snapshot.val().personImageUrl;
+    persistedFaceId= snapshot.val().persistedFaceId;
+    personImageUrl2 = snapshot.val().personImageUrl2;
+    persistedFaceId2= snapshot.val().persistedFaceId2;
+    personImageUrl3 = snapshot.val().personImageUrl3;
+    persistedFaceId3= snapshot.val().persistedFaceId3;
+    var newObject = {
+        'personName': personName,
+        'personId':personId,
+        'personImageUrl': personImageUrl,
+        'persistedFaceId' : persistedFaceId,
+    };
+    characterDatabase.push(newObject);
+}, function(errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+
+// once API calls are done, postResult() called to update DOM
+function postResults() {
+    $('#resultDiv').empty();
+    $('#result2Div').empty();
+    $('#result3Div').empty();
+    $('#result4Div').empty();
+    $('#result5Div').empty();
+    $('form').addClass('hidden');
+    $('#userImageUrl').val('');
+    $('#sectionTitle').text('Result');
+    for ( var i = 0 ; i< characterDatabase.length ; i++){
+        if ( characterDatabase[i].personId === result1 ){
+            var userImg = $('<img>').attr('src',userImageUrl).attr('class', 'user-image').appendTo('#resultDiv');
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class', 'result-image').appendTo('#resultDiv');
+            $('#result1').css('display','none');
+            $('<h3>').text(characterDatabase[i].personName).appendTo('#resultDiv');
+            $('<h3>').text(Math.floor(result1Percent*100)+'%').appendTo('#resultDiv');
+        };
+        if ( characterDatabase[i].personId === result2 ){
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo('#result2Div');
+            $('<h4>').text(characterDatabase[i].personName).appendTo('#result2Div');
+            $('<h4>').text(Math.floor(result2Percent*100)+'%').appendTo('#result2Div');
+        };
+        if ( characterDatabase[i].personId === result3 ){
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo('#result3Div');
+            $('<h4>').text(characterDatabase[i].personName).appendTo('#result3Div');
+            $('<h4>').text(Math.floor(result3Percent*100)+'%').appendTo('#result3Div');
+        };
+        if ( characterDatabase[i].personId === result4 ){
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo('#result4Div');
+            $('<h4>').text(characterDatabase[i].personName).appendTo('#result4Div');
+            $('<h4>').text(Math.floor(result4Percent*100)+'%').appendTo('#result4Div');
+        };
+        if ( characterDatabase[i].personId === result5 ){
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo('#result5Div');
+            $('<h4>').text(characterDatabase[i].personName).appendTo('#result5Div');
+            $('<h4>').text(Math.floor(result5Percent*100)+'%').appendTo('#result5Div');
+        };
+    }
+};
 
 
-  //Button to capture screenshot.
-  var button = document.querySelector('#screenshot-button');
-  // The screenshot gets inserted and displayed into this image tag.
-  var img = document.querySelector('#screenshot-img');
-  // This is the webcam video feed.
-  var video = document.querySelector('#screenshot-video');
-  //Canvas is what ... It's hard to explain.
-  var canvas = document.createElement('canvas');
 
 
-  //This is where the magic happens on click.
-  button.onclick = video.onclick = function() {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      //Basically converting feed into still.
-      canvas.getContext('2d').drawImage(video, 0, 0);
-      //Image src becomes the Base64 data and displayed as a image.
-      img.src = canvas.toDataURL('image/jpeg');
-      console.log(img.src);
-      userImage = img.src //To get it on the global scope.
-  }
-  
-  function handleSuccess(stream) {
-    video.srcObject = stream;
-  }
-  
-  function handleError(error) {
-    console.error('Reeeejected!', error);
-  }
-  
-  navigator.mediaDevices.getUserMedia(constraints).
-    then(handleSuccess).catch(handleError);
+// click event:
+$(document).on("click", '#submit', function(event) {
+    event.preventDefault();
+    userImageUrl = $("#userImageUrl").val().trim();
+    //checks if input has a value
+    if (userImageUrl === "") {alert('Please type in a url')};
 
-    //base64 to blob function to be able to send data through API.
-
-    var makeblob = function (dataURL) { //Pass the stored dataURL from onclick above and store in variable at top.
-        var BASE64_MARKER = ';base64,';
-        if (dataURL.indexOf(BASE64_MARKER) == -1) {
-            var parts = dataURL.split(',');
-            var contentType = parts[0].split(':')[1];
-            var raw = decodeURIComponent(parts[1]);
-            return new Blob([raw], { type: contentType });
-        }
-        var parts = dataURL.split(BASE64_MARKER);
-        var contentType = parts[0].split(':')[1];
-        var raw = window.atob(parts[1]);
-        var rawLength = raw.length;
-
-        var uInt8Array = new Uint8Array(rawLength);
-
-        for (var i = 0; i < rawLength; ++i) {
-            uInt8Array[i] = raw.charCodeAt(i);
-        }
-
-        return new Blob([uInt8Array], { type: contentType });
+    // azure API (nested api in api call)
+    function identifyUser() {
+      
+        $.ajax({
+            url: "https://westus.api.cognitive.microsoft.com/face/v1.0/identify",
+            beforeSend: function(xhrObj){
+                // Request headers
+                xhrObj.setRequestHeader("Content-Type","application/json");
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
+            },
+            type: "POST",
+            // Request body
+            data: JSON.stringify({
+                "personGroupId": "marvel",
+                "faceIds": [userFaceId],
+                "maxNumOfCandidatesReturned": 5,
+                "confidenceThreshold": 0.01
+            }),
+        })
+        .done(function(data) {
+            console.log(data);
+            result1 = data[0].candidates[0].personId;
+            result1Percent = data[0].candidates[0].confidence;
+            result2 = data[0].candidates[1].personId;
+            result2Percent = data[0].candidates[1].confidence;
+            result3 = data[0].candidates[2].personId;
+            result3Percent = data[0].candidates[2].confidence;
+            result4 = data[0].candidates[3].personId;
+            result4Percent = data[0].candidates[3].confidence;
+            result5 = data[0].candidates[4].personId;
+            result5Percent = data[0].candidates[4].confidence;
+            postResults();
+        })
+        .fail(function() {
+            alert("error");
+        });
     }
 
+    $.ajax({
+        url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true",
+        beforeSend: function(xhrObj){
+            // Request headers
+            xhrObj.setRequestHeader("Content-Type","application/json");
+            xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
+        },
+        type: "POST",
+        // Request body
+        data: JSON.stringify({
+            "url": userImageUrl
+            }),
+    })
+    .done(function(data) {
+        console.log(data[0]);
+        console.log(data[0].faceId);
+        userFaceId = data[0].faceId;
+        identifyUser();
+    })
+    .fail(function() {
+        alert("error");
+    });
+});
 
-// Microsoft Azure - Face API starts here.
-//******************************************************************************/
-
-
-
-    function processImage() {
-        // Replace <Subscription Key> with your valid subscription key.
-        var subscriptionKey = "<Subscription Key>";
-
-        // NOTE: You must use the same region in your REST call as you used to
-        // obtain your subscription keys. For example, if you obtained your
-        // subscription keys from westus, replace "westcentralus" in the URL
-        // below with "westus".
-        //
-        // Free trial subscription keys are generated in the westcentralus region.
-        // If you use a free trial subscription key, you shouldn't need to change 
-        // this region.
-        var uriBase =
-            "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect";
-
-        // Request parameters
-        var params = {
-            "returnFaceId": "true",
-            "returnFaceLandmarks": "false",
-            "returnFaceAttributes":
-                "age,gender,headPose,smile,facialHair,glasses,emotion," +
-                "hair,makeup,occlusion,accessories,blur,exposure,noise"
-        };
-
-        // Perform the REST API call.
-        $.ajax({
-            url: uriBase + "?" + $.param(params),
-
-            // Request headers.
-            beforeSend: function(xhrObj){
-                xhrObj.setRequestHeader("Content-Type","application/json");
-                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-            },
-
-            type: "POST",
-
-            //Some extras stuff because we're not sending form data.
-            processData: false,
-            contentType: 'application/octet-stream',
-
-            // Request body.
-            data: makeblob(userImage),
-        })
-
-        .done(function(data) {
-            // Show formatted JSON on webpage.
-            $("#responseTextArea").val(JSON.stringify(data, null, 2));
-        })
-
-        .fail(function(jqXHR, textStatus, errorThrown) {
-            // Display error message.
-            var errorString = (errorThrown === "") ?
-                "Error. " : errorThrown + " (" + jqXHR.status + "): ";
-            errorString += (jqXHR.responseText === "") ?
-                "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
-                    jQuery.parseJSON(jqXHR.responseText).message :
-                        jQuery.parseJSON(jqXHR.responseText).error.message;
-            alert(errorString);
-        });
-    };
