@@ -52,7 +52,7 @@
     .col-md-2{
         border:1px solid gray;
         background: black; 
-        padding:0;
+        padding:1px;
         width:99%
     }
     #missingName,
@@ -70,9 +70,6 @@
         display:block;
     }
     </style>
-<!-- ***************** -->
-<!-- Styling ends here -->
-<!-- *****************-->
 
 <!-- ***************** -->
 <!--   HTML Body here  -->
@@ -238,15 +235,13 @@ $(document).on("click", '#submit', function(event) {
             personId: personId,
             personImageUrl: personImageUrl,
             persistedFaceId: persistedFaceId ,
-            personImageUrl2: personImageUrl2,
+            personImageUrl2: '',
             persistedFaceId2: '',
-            personImageUrl3: personImageUrl3,
+            personImageUrl3: '',
             persistedFaceId3: '',
         });
         $("#personName").val('');
         $("#personImageUrl").val('');
-        $("#personImageUrl2").val('');
-        $("#personImageUrl3").val('');
     };    
     
     // second AJAX call to add image to person ID created below (nested in ajax call below)
@@ -267,7 +262,7 @@ $(document).on("click", '#submit', function(event) {
             .done(function(data) {
                 // alert("success");
                 console.log(data.persistedFaceId);
-                persistedFaceId = data.persistedFaceId
+                persistedFaceId = data.persistedFaceId;
                 firebasePush();
                 $('#successMessage').css('display','block');
                 setTimeout(function(){$('#successMessage').css('display','none');},3000);
