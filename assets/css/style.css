@@ -1,49 +1,111 @@
 html { /*Footer Related*/
   position: relative;
   min-height: 100%;
+  overflow-y:scroll;
 }
 
 body {
   /* padding-top: 70px; */
   background-image: url("../images/main-background.jpg");
- text-align: center;
- background-color: #000;
- font-family: 'Roboto', sans-serif;
- margin-bottom: 60px; /*Footer Related*/
- min-height: calc(100vh - 60px);
-
+  text-align: center;
+  background-color: #000;
+  font-family: 'Roboto', sans-serif;
+  margin-bottom: 60px; /*Footer Related*/
+  min-height: calc(100vh - 210px);
 }
-.mainContent {
-  background-color: #0c0c0c;
-  background-size: auto;
-  max-width: 980px;
-  min-height: calc(100vh - 282px);
+
+/* General Font */
+
+h1 {
+  /* width: 400px; */
+  color: #fff;
+  /* margin: 50px auto 0 auto; */
+  font-size: 4em;
+  font-style: italic;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: 'Oswald', sans-serif;
+  padding-top: 20px;
+}
+
+h2 {
+  color: #9f0000;
+  border-bottom: 1px dashed #9f0000;
+  text-align: left;
+  margin: 30px 40px 20px 40px;
+  padding-bottom: 5px;
+  font-size: 1.5em;
+}
+
+h3, h4 {
+  color: #ccc;
+}
+
+p.subtitle{
+  color: #f78f3f;
+  font-size: 1.25em;
+  margin-top: -5px;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+.titleContainer { /* Section Header */
+  background-color: #ed1b2a;
+  border-bottom: #000 solid 2px;
+}
+
+/* General Layout */
+
+header {
+  background-image: url("../images/header-background.jpg");
+  height: 150px;
 }
 
 .spacer{
   border-top: 1px #ccc solid;
 }
 
-header {
-  background-image: url("../images/header-background.jpg");
-  height: 222px;
+.mainContent {
+  background-color: #0c0c0c;
+  background-size: auto;
+  max-width: 980px;
+  min-height: calc(100vh - 210px);
 }
 
+/* Submit Form Page */
+
 .silhouette {
+  height: 175px;
+  width: 175px;
   border-radius: 50%;
   border: 5px solid #2f2f2f;
 }
 
-input[type="text"], textarea {
-
-  background-color : #ccc; 
-  border: 1px solid #2f2f2f;
-
+form {
+  margin-top: 10px;
+  margin-left: 75px;
+  margin-right: 0;
+  color: #ccc;
 }
 
-form {
-  margin-top: 30px;
-  color: #ccc;
+.form-text{
+  margin-left: 15px;
+}
+
+input#userImageUrl, input#userImageFile { /* Submit Upload Form Coloration */
+  background-color : #ccc; 
+  border: 1px solid #2f2f2f;
+  width: 300px;
+}
+
+input#userImageUrl { /* Specific Submit Upload Form Coloration */
+  font-size: 16px;
+  color: #333;
+}
+
+button {
+  text-transform: uppercase;
+  margin-right: 75px;
 }
 
 .imageUpload {
@@ -57,49 +119,14 @@ form {
 }
 
 .submit-button {
-  margin-top: 25px;
+  margin-top: 20px;
 }
 
-.titleContainer {
-  background-color: #ed1b2a;
-  border-bottom: #000 solid 2px;
-}
+/* Results Page */
 
-
-h1 {
-  /* width: 400px; */
-  color: #fff;
-  /* margin: 50px auto 0 auto; */
-  font-size: 5em;
-  font-style: italic;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-family: 'Oswald', sans-serif;
-  padding-top: 38px;
-}
-
-h2 {
-  color: #9f0000;
-  border-bottom: 1px dashed #9f0000;
-  text-align: left;
-  margin: 50px 40px;
-  padding-bottom: 5px;
-}
-
-h3 {
-  color: white;
-}
-
-h4 {
-  color: #ccc
-}
-
-p.subtitle{
-  color: #f78f3f;
-  font-size: 1.5em;
-  margin-top: -5px;
-  text-transform: uppercase;
-  font-style: italic;
+.reset-button {
+  margin-right: 0;
+  margin-top: 20px;
 }
 
 .user-image, .result-image {
@@ -116,22 +143,7 @@ p.subtitle{
   border: 1px solid #2f2f2f;
 }
 
-.resultCard{
-  margin: 50px auto 0 auto;
-}
-
-.homeButton {
-  width: 125px;
-  margin-top: 130px;
-}
-
-.redoButton {
-  margin-top: 40px;
-}
-
-.futurefooter {
-  background-color: white;
-}
+/* Footer */
 
 .footer {
   position: absolute;
@@ -150,15 +162,128 @@ p.subtitle{
   border-radius: 50%;
 }
 
-/* .user-image{
-  border-top-left-radius: 15px;
-  border-bottom-left-radius: 15px;
-}
-.result-image{
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
-} */
+/*
+These rules take effect when the browser's width
+is either 850px or less. Merely for cosmetic purposes.
+---------------------------------------------------------------------------------------------------- */
 
-.form-text{
-  margin-left: 15px;
+@media screen and (max-width: 850px) { /*iPad and weird break points*/
+  form {
+    margin-left: 30px;
+  }
+}
+
+/*
+These rules take effect when the browser's width
+is either 767px or less. Merely for cosmetic purposes.
+---------------------------------------------------------------------------------------------------- */
+
+@media screen and (max-width: 767px) {
+
+div.form-group.imageUpload {
+  text-align: center;
+}
+
+label.submit-label, #urlHelp, #fileHelp, form, button {
+  margin: 0;
+}
+
+input#userImageFile {
+  margin: 0 auto;
+}
+
+#resultDiv {
+  margin-bottom: 20px;
+}
+
+div.form-group.imageUpload {
+  width: 100%;
+}
+
+}
+
+/*
+These rules take effect when the browser's width
+is either 414px or less. Merely for cosmetic purposes.
+---------------------------------------------------------------------------------------------------- */
+
+@media screen and (max-width: 414px) {
+
+  h1 {
+    font-size: 3em;
+  }
+
+  header {
+    height: 130px;
+  }
+
+  p.subtitle {
+    font-size: 1.0em;
+  }
+
+  .silhouette {
+    height: 150px;
+    width: 150px;
+  }
+
+  .user-image, .result-image {
+    height: 200px;
+    width: 200px;
+  }
+
+  body, .mainContent{
+    min-height: calc(100vh - 190px);
+  }
+  
+}
+
+/*
+These rules take effect when the browser's width
+is either 375px or less. Merely for cosmetic purposes.
+---------------------------------------------------------------------------------------------------- */
+
+@media screen and (max-width: 375px) {
+
+  h1 {
+    padding-top: 15px;
+  }
+
+  h2 {
+    margin-top: 15px;
+  }
+
+  header {
+    height: 120px;
+  }
+
+  .silhouette {
+    height: 125px;
+    width: 125px;
+  }
+  
+  .user-image, .result-image {
+    height: 175px;
+    width: 175px;
+  }
+
+  body, .mainContent {
+    min-height: calc(100vh - 180px);
+  }
+
+}
+
+
+/*
+These rules take effect when the browser's width
+is either 360px or less. Merely for cosmetic purposes.
+---------------------------------------------------------------------------------------------------- */
+
+@media screen and (max-width: 360px) {
+
+  .user-image, .result-image {
+    height: 170px;
+    width: 170px;
+  }
+ 
+
 }
