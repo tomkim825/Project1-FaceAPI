@@ -1,5 +1,3 @@
- setTimeout(function(){$('#myVideo').addClass('hidden')},1000*12);
- 
  // Initialize Firebase
   var config = {
     apiKey: "AIzaSyBKX1GXX2C_DBhXESSB3xtln6W8czM-TJY",
