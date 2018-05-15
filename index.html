@@ -55,8 +55,8 @@
       <div class="col-md-6">
         <form>
           <div class="form-group imageUpload">
-              <label for="userImageUrl" class="submit-label">URL for your image</label>
-              <input type="text" class="form-control-lg text-left userImageUrl col-md-11" id="userImageUrl" onfocus="this.placeholder = ''" placeholder="Copy and paste image URL">
+              <label for="userImageUrl" class="submit-label">URL for your image</label><br>
+              <input type="text" class="form-control-lg text-left userImageUrl" id="userImageUrl" onfocus="this.placeholder = ''" placeholder="Copy and paste image URL">
               <small id="urlHelp" class="form-text text-light"> (JPEG, PNG, GIF, BMP, Max file size: 4MB)</small>
           </div>
           <button type="submit" class="btn btn-secondary submit-button" id="submit">Submit</button>
@@ -66,16 +66,17 @@
       <div class="col-md-6">
         <form>
           <div class="form-group imageUpload">
-              <label for="userImageFile" class="submit-label">Upload Image <span id="uploadStatus"> (upload could take a moment)</span></label>
-              <input type="file" class="form-control text-left userImageFile col-md-11" id="userImageFile" onfocus="this.placeholder = ''" placeholder="Please select a file">
+              <label for="userImageFile" class="submit-label">Upload Image <span id="uploadStatus"> (Could take a moment)</span></label><br>
+              <input type="file" class="form-control text-left userImageFile" id="userImageFile" onfocus="this.placeholder = ''" placeholder="Please select a file">
+              
               <small id="fileHelp" class="form-text text-light"> (JPEG, PNG, GIF, BMP, Max file size: 4MB)</small>
-          </div>
-          <button type="submit" class="btn btn-secondary submit-button" id="upload">upload</button>
+          </div> 
+          <button type="submit" class="btn btn-secondary submit-button" id="upload">Upload</button>
       </form>
       </div>
     </div>
     <div>
-      <button type="submit" class="btn btn-secondary submit-button hidden" id="reset">RESET</button>
+      <button type="submit" class="btn btn-secondary reset-button hidden" id="reset">Reset</button>
     </div>
   </div>
 </div>
@@ -84,7 +85,7 @@
 <!--Footer-->
 <footer class="footer">
     <div class="container">
-      <span class="text-muted"> &copy; Group3</span>
+      <span class="text-muted"> Copyright &copy; Group 3</span>
     </div>
 </footer>
   <!-- jQuery link -->
