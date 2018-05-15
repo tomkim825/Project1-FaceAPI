@@ -150,14 +150,14 @@ p.subtitle{
   border-radius: 50%;
 }
 
-.user-image{
+/* .user-image{
   border-top-left-radius: 15px;
   border-bottom-left-radius: 15px;
 }
 .result-image{
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
-}
+} */
 
 .form-text{
   margin-left: 15px;
