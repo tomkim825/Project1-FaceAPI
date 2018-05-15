@@ -1,18 +1,123 @@
+html { /*Footer Related*/
+  position: relative;
+  min-height: 100%;
+}
+
 body {
+  /* padding-top: 70px; */
+  background-image: url("../images/main-background.jpg");
  text-align: center;
+ background-color: #000;
+ font-family: 'Roboto', sans-serif;
+ margin-bottom: 60px; /*Footer Related*/
+ min-height: calc(100vh - 60px);
+
+}
+.mainContent {
+  background-color: #0c0c0c;
+  background-size: auto;
+  max-width: 980px;
+  min-height: calc(100vh - 282px);
+}
+
+.spacer{
+  border-top: 1px #ccc solid;
+}
+
+header {
+  background-image: url("../images/header-background.jpg");
+  height: 222px;
+}
+
+.silhouette {
+  border-radius: 50%;
+  border: 5px solid #2f2f2f;
+}
+
+input[type="text"], textarea {
+
+  background-color : #ccc; 
+  border: 1px solid #2f2f2f;
 
 }
 
+form {
+  margin-top: 30px;
+  color: #ccc;
+}
+
+.imageUpload {
+  width: 500px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.submit-label {
+  margin-left: 15px;
+}
+
+.submit-button {
+  margin-top: 25px;
+}
+
+.titleContainer {
+  background-color: #ed1b2a;
+  border-bottom: #000 solid 2px;
+}
+
+
 h1 {
-  margin-top: 50px;
+  /* width: 400px; */
+  color: #fff;
+  /* margin: 50px auto 0 auto; */
+  font-size: 5em;
+  font-style: italic;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: 'Oswald', sans-serif;
+  padding-top: 38px;
+}
+
+h2 {
+  color: #9f0000;
+  border-bottom: 1px dashed #9f0000;
+  text-align: left;
+  margin: 50px 40px;
+  padding-bottom: 5px;
+}
+
+h3 {
+  color: white;
+}
+
+h4 {
+  color: #ccc
+}
+
+p.subtitle{
+  color: #f78f3f;
+  font-size: 1.5em;
+  margin-top: -5px;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+.user-image, .result-image {
+  object-fit: cover;
+  width:225px;
+  height:225px;
+  border: 1px solid #2f2f2f;
+}
+
+.alt-result-image {
+  object-fit: cover;
+  width:100px;
+  height:100px;
+  border: 1px solid #2f2f2f;
 }
 
 .resultCard{
   margin: 50px auto 0 auto;
-}
-
-.gif {
-  margin-top: 80px;
 }
 
 .homeButton {
@@ -24,6 +129,36 @@ h1 {
   margin-top: 40px;
 }
 
-p{
-  margin-top: 40px;
+.futurefooter {
+  background-color: white;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px; /* Set the fixed height of the footer here */
+  line-height: 60px; /* Vertically center the text there */
+  background-color: #000;
+}
+
+.hidden {
+  display: none;
+}
+
+.alt-result-image{
+  border-radius: 50%;
+}
+
+/* .user-image{
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+.result-image{
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+} */
+
+.form-text{
+  margin-left: 15px;
 }

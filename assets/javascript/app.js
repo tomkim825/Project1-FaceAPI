@@ -1,152 +1,223 @@
-alert("Connected!");
-
-// Checking if user has getUser Media Functionality
-//******************************************************************************/
-
-function hasGetUserMedia() {
-    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-  }
-  
-  if (hasGetUserMedia()) {
-    // Good to go!
-    alert('getUserMedia() is supported by your browser');
-  } else {
-    alert('getUserMedia() is not supported by your browser');
-  }
-
-
-// Capture Functionality
-//******************************************************************************/
-var constraints = {
-    // What hardware we are wanting to access. Just doing plain vanilla default video: true; audio not necessary.
-    video: true,
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBKX1GXX2C_DBhXESSB3xtln6W8czM-TJY",
+    authDomain: "project1-marvelfaceapi.firebaseapp.com",
+    databaseURL: "https://project1-marvelfaceapi.firebaseio.com",
+    projectId: "project1-marvelfaceapi",
+    storageBucket: "project1-marvelfaceapi.appspot.com",
+    messagingSenderId: "259704712712"
   };
-  
+  firebase.initializeApp(config);
+  var database = firebase.database();
+  var storage = firebase.storage();
 
-  //Stores get base64 webcam capture in a global variable.
-  var userImage;
+// INITIALIZE GLOBAL VARIABLES
+var personName ='';
+var personId ='';
+var personImageUrl='';
+var characterDatabase=[];
+var userImageUrl;
+var userFaceId;
+var userResult;
+var result1;
+var result1Percent;
+var result2;
+var result2Percent;
+var result3;
+var result3Percent;
+var result4;
+var result4Percent;
+var result5;
+var result5Percent;
 
+// **********************************
+// Above reserved for initializing **
+// **********************************
+// ******************   On page open: recall characters to create
+// firebase Database:   database of info called characterDatabase
+// ******************   (array of objects) to refer API data with
 
-  //Button to capture screenshot.
-  var button = document.querySelector('#screenshot-button');
-  // The screenshot gets inserted and displayed into this image tag.
-  var img = document.querySelector('#screenshot-img');
-  // This is the webcam video feed.
-  var video = document.querySelector('#screenshot-video');
-  //Canvas is what ... It's hard to explain.
-  var canvas = document.createElement('canvas');
-
-
-  //This is where the magic happens on click.
-  button.onclick = video.onclick = function() {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      //Basically converting feed into still.
-      canvas.getContext('2d').drawImage(video, 0, 0);
-      //Image src becomes the Base64 data and displayed as a image.
-      img.src = canvas.toDataURL('image/jpeg');
-      console.log(img.src);
-      userImage = img.src //To get it on the global scope.
-  }
-  
-  function handleSuccess(stream) {
-    video.srcObject = stream;
-  }
-  
-  function handleError(error) {
-    console.error('Reeeejected!', error);
-  }
-  
-  navigator.mediaDevices.getUserMedia(constraints).
-    then(handleSuccess).catch(handleError);
-
-    //base64 to blob function to be able to send data through API.
-
-    var makeblob = function (dataURL) { //Pass the stored dataURL from onclick above and store in variable at top.
-        var BASE64_MARKER = ';base64,';
-        if (dataURL.indexOf(BASE64_MARKER) == -1) {
-            var parts = dataURL.split(',');
-            var contentType = parts[0].split(':')[1];
-            var raw = decodeURIComponent(parts[1]);
-            return new Blob([raw], { type: contentType });
-        }
-        var parts = dataURL.split(BASE64_MARKER);
-        var contentType = parts[0].split(':')[1];
-        var raw = window.atob(parts[1]);
-        var rawLength = raw.length;
-
-        var uInt8Array = new Uint8Array(rawLength);
-
-        for (var i = 0; i < rawLength; ++i) {
-            uInt8Array[i] = raw.charCodeAt(i);
-        }
-
-        return new Blob([uInt8Array], { type: contentType });
-    }
-
-
-// Microsoft Azure - Face API starts here.
-//******************************************************************************/
-
-
-
-    function processImage() {
-        // Replace <Subscription Key> with your valid subscription key.
-        var subscriptionKey = "<Subscription Key>";
-
-        // NOTE: You must use the same region in your REST call as you used to
-        // obtain your subscription keys. For example, if you obtained your
-        // subscription keys from westus, replace "westcentralus" in the URL
-        // below with "westus".
-        //
-        // Free trial subscription keys are generated in the westcentralus region.
-        // If you use a free trial subscription key, you shouldn't need to change 
-        // this region.
-        var uriBase =
-            "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect";
-
-        // Request parameters
-        var params = {
-            "returnFaceId": "true",
-            "returnFaceLandmarks": "false",
-            "returnFaceAttributes":
-                "age,gender,headPose,smile,facialHair,glasses,emotion," +
-                "hair,makeup,occlusion,accessories,blur,exposure,noise"
-        };
-
-        // Perform the REST API call.
-        $.ajax({
-            url: uriBase + "?" + $.param(params),
-
-            // Request headers.
-            beforeSend: function(xhrObj){
-                xhrObj.setRequestHeader("Content-Type","application/json");
-                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-            },
-
-            type: "POST",
-
-            //Some extras stuff because we're not sending form data.
-            processData: false,
-            contentType: 'application/octet-stream',
-
-            // Request body.
-            data: makeblob(userImage),
-        })
-
-        .done(function(data) {
-            // Show formatted JSON on webpage.
-            $("#responseTextArea").val(JSON.stringify(data, null, 2));
-        })
-
-        .fail(function(jqXHR, textStatus, errorThrown) {
-            // Display error message.
-            var errorString = (errorThrown === "") ?
-                "Error. " : errorThrown + " (" + jqXHR.status + "): ";
-            errorString += (jqXHR.responseText === "") ?
-                "" : (jQuery.parseJSON(jqXHR.responseText).message) ?
-                    jQuery.parseJSON(jqXHR.responseText).message :
-                        jQuery.parseJSON(jqXHR.responseText).error.message;
-            alert(errorString);
-        });
+database.ref().orderByChild("personName").on("child_added", function(snapshot) {
+    // store values from firebase snapshot
+    personName = snapshot.val().personName;
+    personId = snapshot.val().personId;
+    personImageUrl = snapshot.val().personImageUrl;
+    // create object with obtained values
+    var newObject = {
+        'personName': personName,
+        'personId':personId,
+        'personImageUrl': personImageUrl,
     };
+    // push the object to array for later reference
+    characterDatabase.push(newObject);
+
+}, function(errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
+
+// **************************************************************
+// once API calls are done, postResult() called to update DOM ***
+// **************************************************************
+
+function postResults(userImageUrl) {
+    $('form').addClass('hidden');
+    $('#sectionTitle').text('Result');
+    
+    // ****** start of reusable code block for results 2 to 5 below -> adds image, name, %  ******  
+    function resultDiv2to5(resultNumDiv,resultNumPercent){
+        var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo(resultNumDiv);
+        $('<h4>').text(characterDatabase[i].personName).appendTo(resultNumDiv);
+        $('<h4>').text(Math.floor(resultNumPercent*100)+'%').appendTo(resultNumDiv);
+    };
+    // *****************  end of reusable code block for results 2 to 5 below  ******************* 
+    
+    // for loop cycles through database for personId and pulls other relevant info
+    for ( var i = 0 ; i< characterDatabase.length ; i++){
+        // checks for result #1
+        if ( characterDatabase[i].personId === result1 ){
+            var userImg = $('<img>').attr('src',userImageUrl).attr('class', 'user-image').appendTo('#resultDiv');
+            var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class', 'result-image').appendTo('#resultDiv');
+            $('#result1').css('display','none');
+            $('<h3>').text(characterDatabase[i].personName).appendTo('#resultDiv');
+            $('<h3>').text(Math.floor(result1Percent*100)+'%').appendTo('#resultDiv');
+        };
+        // results 2-5 styling is identical so it is repeated by using function above
+        if ( characterDatabase[i].personId === result2 ){resultDiv2to5('#result2Div',result2Percent)};
+        if ( characterDatabase[i].personId === result3 ){resultDiv2to5('#result3Div',result3Percent)};
+        if ( characterDatabase[i].personId === result4 ){resultDiv2to5('#result4Div',result4Percent)};
+        if ( characterDatabase[i].personId === result5 ){resultDiv2to5('#result5Div',result5Percent)};
+        $('#reset').removeClass('hidden');
+    }
+};
+// **************************************************************
+// ***             end of function postResult()               ***
+// **************************************************************
+
+// ***************************************************************************************
+// ** callAPIs(): API calls wrapped in a function to be called after either image input **
+// ***************************************************************************************
+function callAPIs(userImageUrl) {
+    // *******************************************************
+    // identifyUSer(): 2nd API called after promise of 1st API
+    // Once user image detected, this API finds superhero match
+    // (coded above 1st API call to prevent error)
+    // *******************************************************
+    function identifyUser() {
+    
+        $.ajax({
+            url: "https://westus.api.cognitive.microsoft.com/face/v1.0/identify",
+            beforeSend: function(xhrObj){
+                // Request headers
+                xhrObj.setRequestHeader("Content-Type","application/json");
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
+            },
+            type: "POST",
+            // Request body
+            data: JSON.stringify({
+                "personGroupId": "marvel",
+                "faceIds": [userFaceId],
+                "maxNumOfCandidatesReturned": 5,
+                "confidenceThreshold": 0.01
+            }),
+        })
+        .done(function(data) {
+            // for loop creates result 1-5 personIds and % confidence then function to post to HTML 
+            for(var i=0 ; i<5 ; i++){
+            eval("result" + (i+1) + " = data[0].candidates["+i+"].personId");
+            eval("result" + (i+1) + "Percent = data[0].candidates["+i+"].confidence");
+            };
+            postResults(userImageUrl);
+        })
+        .fail(function(error) {
+            console.log(error);
+        });
+    }
+    // **************************************************
+    //       end of identifyUser() - 2nd API call 
+    // **************************************************
+
+    // **************************************************
+    // 1st API call to send image URL for face detection
+    // Then userFaceId returned. identifyUser() function 
+    // with 2nd API (above) called after promise  
+    // **************************************************
+
+    $.ajax({
+        url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true",
+        beforeSend: function(xhrObj){
+            // Request headers
+            xhrObj.setRequestHeader("Content-Type","application/json");
+            xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
+        },
+        type: "POST",
+        // Request body
+        data: JSON.stringify({
+            "url": userImageUrl
+            }),
+    })
+    .done(function(data) {
+        userFaceId = data[0].faceId;
+        // after 1st API returns userFaceId, call 2nd API to identify that userFaceId
+        identifyUser();
+    })
+    .fail(function(error) {
+        console.log(error);
+    });
+    // **************************************************
+    //                end of 1st API call 
+    // **************************************************
+};
+// **************************************************************************
+// **                     End of function: callAPIs()                      **
+// **************************************************************************
+
+// **************************************************************
+//        Input option #1: user types in url and hits submit
+// **************************************************************
+$(document).on("click", '#submit', function(event) {
+    event.preventDefault();
+    // grabs url from user input
+    userImageUrl = $("#userImageUrl").val().trim();
+    //call API if URL has a value
+    if (userImageUrl !== ""){
+        callAPIs(userImageUrl);
+        $("#userImageUrl").val('');     
+    }; 
+});
+
+// ***************************************************************
+//          Input option #2: user selects file from device
+//    file sent to FireBase storage & URL returned -> callAPIs()  
+// ***************************************************************
+$(document).on("click", '#upload', function(event) {
+    event.preventDefault();
+    // call API if file selected
+    if( $('#userImageFile').val() !== ''){
+        $('#uploadStatus').css('color','red').text('UPLOADING...');
+        const file = $('#userImageFile').get(0).files[0];
+        const task = storage.ref().child('file.jpg').put(file);
+        task.then(function(snapshot) {
+        callAPIs(snapshot.downloadURL);
+        $('#userImageFile').val(''); 
+        });
+    }
+});
+
+// ***************************************************************
+//                      RESET button:
+//            restore page back to original state
+// ***************************************************************
+$(document).on("click", '#reset', function(event) {
+    event.preventDefault();
+    $('#reset').addClass('hidden');
+    $('#resultDiv').empty();
+    $('#result2Div').empty();
+    $('#result3Div').empty();
+    $('#result4Div').empty();
+    $('#result5Div').empty();
+    $('form').removeClass('hidden');
+    $('#sectionTitle').text('Upload');
+    $('#uploadStatus').css('color','white').text('(upload could take a moment)');
+    $('#result1').css('display','inline');
+    $('<img>').addClass('silhouette img-fluid').attr('id','result1').attr('src','assets/images/user-silhouette.png').css('width','225px').appendTo('#resultDiv');
+});

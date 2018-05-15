@@ -32,7 +32,13 @@
         float:left;    
     }
     img{
-        width:100%;
+        max-width:100%; 
+        width: 18vmin;
+        height: 16vmin;
+        object-fit: contain;
+        display:block;
+        margin: 0 auto;
+
     }
     .col-md-1:hover{
         transform: scale(2.5);
@@ -49,17 +55,24 @@
     .col-md-2{
         border:1px solid gray;
         background: black; 
-        padding:0;
+        padding:1px;
         width:99%
     }
     #missingName,
-    #missingURL {
+    #missingURL,
+    #successMessage,
+    #errorMessage {
         display:none;
     }
+    .addAnotherImage,
+    .additional{
+        width: 98%;
+        transform: scaleX(0.85) scaleY(0.5);
+        margin: -6px 0;
+        padding:0;
+        display:block;
+    }
     </style>
-<!-- ***************** -->
-<!-- Styling ends here -->
-<!-- *****************-->
 
 <!-- ***************** -->
 <!--   HTML Body here  -->
@@ -76,7 +89,8 @@
             </div>
         </div>
         <div class='row' id='row1'>
-            <div class='col-md-2'>
+            <!-- 1st 2 column for data input -->
+            <div class='col-md-2 col-sm-6 col-6'>
                 <h5>Input new character:</h5>
                 <form>
                     <div class="form-group">
@@ -87,26 +101,30 @@
                         <label for="personImageUrl">Image URL</label>
                         <input type="text" class="form-control" id="personImageUrl" placeholder="Type in URL">
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="personImageUrl2">2nd Image URL</label>
-                        <input type="text" class="form-control" id="personImageUrl2" placeholder="(OPTIONAL)">
-                    </div>
-                    <div class="form-group">
-                        <label for="personImageUrl3">3rd Image URL</label>
-                        <input type="text" class="form-control" id="personImageUrl3" placeholder="(OPTIONAL)">
-                    </div> -->
-                    <button type="submit" class="btn btn-secondary" id="submit">Submit</button>
+                    <button type="submit" class="btn btn-secondar" id="submit">Submit</button>
                     <button type="submit" class="btn btn-success" id="train">Analyze images</button>
                 </form>
-                <div class="alert alert-warning" id='missingName'>
-                    <strong>Info Missing!</strong> Please Type in Character Name.
-                </div>
-                <div class="alert alert-warning" id='missingURL'>
-                    <strong>Info Missing!</strong> Please Type in Image URL.
-                </div>
             </div>
+                <!-- next 2 column for message console instead of using alerts -->
+                <div class='col-md-2 col-sm-6 col-6'>
+                        <h5>Message Console:</h5>
+                    <div class="alert alert-warning" id='missingName'>
+                        <strong>Info Missing!</strong> Please Type in Character Name.
+                    </div>
+                    <div class="alert alert-warning" id='missingURL'>
+                        <strong>Info Missing!</strong> Please Type in Image URL.
+                    </div>
+                    <div class="alert alert-success" id='successMessage'>
+                        <strong>Success!</strong> Info went through.
+                    </div>
+                    <div class="alert alert-danger" id='errorMessage'>
+                            <strong>ERROR!</strong> Please check console logs for more details.
+                    </div>
+                </div>
         </div>
+        <div id='moreRows'></div>
     </div>
+
 
 <!-- ***************** -->
 <!--  JAVASCRIPT here  -->
@@ -139,19 +157,20 @@ var personImageUrl3='';
 var persistedFaceId3='';
 var colNum = 0;
 var personCount=0;
-var rowCount = 2
+var rowCount = 2;
+var firebaseKey;
 
-// create initial 10 character columns to be filled (1st 2 columns are reserved for input form)
-for (var i=0; i<10;i++){
-    $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row1');
+// create initial 8 character columns to be filled (1st [2] 2-columns are reserved for input form)
+for (var i=0; i<8;i++){
+    $('<div>').addClass('col-md-1 col-sm-12 col-12').attr('id','col-'+i).appendTo('#row1');
 };
 
 // function to add additional rows and columns to grid as needed once existing ones fill up
 function addRows() {
-    if ((personCount-10)%12 === 0){
-        $('<row>').addClass('row').attr('id','row'+rowCount).appendTo('#mainBody');
+    if ((personCount-8)%12 === 0){
+        $('<row>').addClass('row').attr('id','row'+rowCount).appendTo('#moreRows');
         for (var i=personCount; i<(personCount+12);i++){
-            $('<div>').addClass('col-md-1').attr('id','col-'+i).appendTo('#row'+rowCount);
+            $('<div>').addClass('col-md-1 col-sm-12 col-12').attr('id','col-'+i).appendTo('#row'+rowCount);
         };
         rowCount++
     }
@@ -161,20 +180,29 @@ function addRows() {
 function fillOutHtmlDataBase(){
     $('<div>').text(personName).appendTo('#col-'+ colNum);
     $('<div>').text(personId).addClass('idText').appendTo('#col-'+ colNum);
-    $('<hr>').appendTo('#col-'+ colNum);
+    if(personImageUrl2 === ''){
+        $('<input>').attr('type','text').addClass('form-control additional').attr('id',"personImageUrl2-"+colNum).attr('placeholder',"Type in URL").appendTo('#col-'+ colNum);  
+        $('<button>').text('add 2nd image').addClass('btn btn-default btn-xs addAnotherImage').attr('id',"add2ndUrl").attr('data-id',personId).attr('data-key',firebaseKey).attr('data-inputnum',colNum).appendTo('#col-'+ colNum);    
+    } else if(personImageUrl3 === ''){   
+        $('<input>').attr('type','text').addClass('form-control additional').attr('id',"personImageUrl3-"+colNum).attr('placeholder',"Type in URL").appendTo('#col-'+ colNum);  
+        $('<button>').text('add 3rd image').addClass('btn btn-default btn-xs addAnotherImage').attr('id',"add3rdUrl").attr('data-id',personId).attr('data-key',firebaseKey).attr('data-inputnum',colNum).appendTo('#col-'+ colNum);    
+    } else {
+        $('<div>').text('images full').css("height","3.75vh").addClass('btn btn-default btn-xs').appendTo('#col-'+ colNum);    
+    };
     $("<img>").attr("src", personImageUrl).appendTo('#col-'+ colNum);
     $('<div>').text(persistedFaceId).addClass('idText').appendTo('#col-'+ colNum);
-    // $('<hr>').appendTo('#col-'+ colNum);
-    // $("<img>").attr("src", personImageUrl2).appendTo('#col-'+ colNum);
-    // $('<div>').text(persistedFaceId2).addClass('idText').appendTo('#col-'+ colNum);
-    // $("<img>").attr("src", personImageUrl3).appendTo('#col-'+ colNum);
-    // $('<div>').text(persistedFaceId3).addClass('idText').appendTo('#col-'+ colNum);
+    if(personImageUrl2 !== ''){    
+        $("<img>").attr("src", personImageUrl2).appendTo('#col-'+ colNum);
+        $('<div>').text(persistedFaceId2).addClass('idText').appendTo('#col-'+ colNum);
+    };
+    if(personImageUrl3 !== ''){   
+        $("<img>").attr("src", personImageUrl3).appendTo('#col-'+ colNum);
+        $('<div>').text(persistedFaceId3).addClass('idText').appendTo('#col-'+ colNum);
+    };
     colNum++;
 };
 
-
 database.ref().orderByChild("personName").on("child_added", function(snapshot) {
-    console.log('firebase worked');
     personName = snapshot.val().personName;
     personId = snapshot.val().personId;
     personImageUrl = snapshot.val().personImageUrl;
@@ -183,6 +211,7 @@ database.ref().orderByChild("personName").on("child_added", function(snapshot) {
     persistedFaceId2= snapshot.val().persistedFaceId2;
     personImageUrl3 = snapshot.val().personImageUrl3;
     persistedFaceId3= snapshot.val().persistedFaceId3;
+    firebaseKey = snapshot.key;
     personCount++;
     addRows();
     fillOutHtmlDataBase();
@@ -190,20 +219,17 @@ database.ref().orderByChild("personName").on("child_added", function(snapshot) {
     console.log("The read failed: " + errorObject.code);
 });
 
-
 // functions and rest of script below:
 $(document).on("click", '#submit', function(event) {
     event.preventDefault();
-    $('#missingName').css('display','none');
-    $('#missingURL').css('display','none')
+    // $('#missingName').css('display','none');
+    // $('#missingURL').css('display','none')
     personName = $("#personName").val().trim();
     personImageUrl = $("#personImageUrl").val().trim();
-    // personImageUrl2 = $("#personImageUrl2").val().trim();
-    // personImageUrl3 = $("#personImageUrl3").val().trim();
 
     //checks if each input has a value
-    if (personName === "") {$('#missingName').css('display','block')};
-    if (personImageUrl === "") {$('#missingURL').css('display','block')};
+    if (personName === "") {$('#missingName').css('display','block');setTimeout(function(){$('#missingName').css('display','none');},5000);};
+    if (personImageUrl === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},5000);};
         
     // pushes info to firebase after AJAX calls return Ids. NESTED into AJAX promise of addImage()
     function firebasePush(){
@@ -212,15 +238,13 @@ $(document).on("click", '#submit', function(event) {
             personId: personId,
             personImageUrl: personImageUrl,
             persistedFaceId: persistedFaceId ,
-            personImageUrl2: personImageUrl2,
+            personImageUrl2: '',
             persistedFaceId2: '',
-            personImageUrl3: personImageUrl3,
+            personImageUrl3: '',
             persistedFaceId3: '',
         });
         $("#personName").val('');
         $("#personImageUrl").val('');
-        $("#personImageUrl2").val('');
-        $("#personImageUrl3").val('');
     };    
     
     // second AJAX call to add image to person ID created below (nested in ajax call below)
@@ -241,11 +265,16 @@ $(document).on("click", '#submit', function(event) {
             .done(function(data) {
                 // alert("success");
                 console.log(data.persistedFaceId);
-                persistedFaceId = data.persistedFaceId
+                persistedFaceId = data.persistedFaceId;
                 firebasePush();
+                $('#successMessage').css('display','block');
+                setTimeout(function(){$('#successMessage').css('display','none');},5000);
             })
-            .fail(function() {
+            .fail(function(error) {
                 console.log("error");
+                console.log(error);
+                $('#errorMessage').css('display','block');
+                setTimeout(function(){$('#errorMessage').css('display','none');},5000);
             });
     };
         // first AJAX call - creates person id
@@ -267,8 +296,11 @@ $(document).on("click", '#submit', function(event) {
             personId = data.personId;
             addimage();
         })
-        .fail(function() {
+        .fail(function(error) {
             console.log("error");
+            console.log(error);
+            $('#errorMessage').css('display','block');
+            setTimeout(function(){$('#errorMessage').css('display','none');},5000);
         });
 });
 
@@ -286,11 +318,72 @@ $(document).on("click", '#train', function(event) {
         })
         .done(function(data) {
             console.log(data);
+            $('#successMessage').css('display','block');
+            setTimeout(function(){$('#successMessage').css('display','none');},5000);
         })
         .fail(function(error) {
             console.log(error);
+            $('#errorMessage').css('display','block');
+            setTimeout(function(){$('#errorMessage').css('display','none');},5000);
         });
    
+});
+
+
+// second AJAX call to add image to person ID created below (nested in ajax call below)
+function addAdditionalImage(personId,personImageUrl,firebaseUrl,firebaseId){      
+        $.ajax({
+            url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons/"+personId+"/persistedFaces?",
+            beforeSend: function(xhrObj){
+                // Request headers
+                xhrObj.setRequestHeader("Content-Type","application/json");
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
+            },
+            type: "POST",
+            // Request body
+            data: JSON.stringify({
+                "url": personImageUrl
+            }),
+        })
+        .done(function(data) {
+            console.log(data.persistedFaceId);
+            persistedFaceId = data.persistedFaceId
+            database.ref().child(firebaseKey).child(firebaseUrl).set(personImageUrl);
+            database.ref().child(firebaseKey).child(firebaseId).set(persistedFaceId);
+            $('#successMessage').css('display','block');
+            setTimeout(function(){$('#successMessage').css('display','none');},5000);
+        })
+        .fail(function(error) {
+            console.log("error");
+            console.log(error);
+            $('#errorMessage').css('display','block');
+            setTimeout(function(){$('#errorMessage').css('display','none');},5000);
+        });
+};
+
+
+// Add 2nd or 3rd image button click
+
+$(document).on("click", '#add2ndUrl', function(event) {
+    event.preventDefault();
+    personId = $(this).data("id");
+    firebaseKey = $(this).data("key");
+    personImageUrl2 = $("#personImageUrl2-"+ $(this).data("inputnum")).val().trim();
+    //checks if each input has a value
+    if (personImageUrl2 === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},5000);};
+    addAdditionalImage(personId,personImageUrl2,'personImageUrl2','persistedFaceId2');
+    $("#personImageUrl2-"+ $(this).data("inputnum")).val('');
+});
+
+$(document).on("click", '#add3rdUrl', function(event) {
+    event.preventDefault();
+    personId = $(this).data("id");
+    firebaseKey = $(this).data("key");
+    personImageUrl3 = $("#personImageUrl3-"+ $(this).data("inputnum")).val().trim();
+    //checks if each input has a value
+    if (personImageUrl3 === "") {$('#missingURL').css('display','block')};
+    addAdditionalImage(personId,personImageUrl3,'personImageUrl3','persistedFaceId3');
+    $("#personImageUrl3-"+ $(this).data("inputnum")).val('');
 });
 </script>
 </body>
