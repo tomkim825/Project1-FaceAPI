@@ -90,6 +90,7 @@ function postResults(userImageUrl) {
         if ( characterDatabase[i].personId === result5 ){resultDiv2to5('#result5Div',result5Percent)};
         $('#reset').removeClass('hidden');
     }
+    storage.ref().child('file.jpg').delete();
 };
 // **************************************************************
 // ***             end of function postResult()               ***
@@ -229,5 +230,5 @@ $(document).on("click", '#reset', function(event) {
     $('#sectionTitle').text('Upload');
     $('#uploadStatus').css('color','white').text('(upload could take a moment)');
     $('#result1').css('display','inline');
-    $('<img>').addClass('silhouette img-fluid').attr('id','result1').attr('src','assets/images/user-silhouette.png').css('width','225px').appendTo('#resultDiv');
+    $('<img>').addClass('silhouette img-fluid').attr('id','result1').attr('src','assets/images/user-silhouette.png').appendTo('#resultDiv');
 });
