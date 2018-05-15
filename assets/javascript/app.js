@@ -1,4 +1,4 @@
-  // Initialize Firebase
+ // Initialize Firebase
   var config = {
     apiKey: "AIzaSyBKX1GXX2C_DBhXESSB3xtln6W8czM-TJY",
     authDomain: "project1-marvelfaceapi.firebaseapp.com",
@@ -29,6 +29,7 @@ var result4;
 var result4Percent;
 var result5;
 var result5Percent;
+var messageCount=1;
 
 // **********************************
 // Above reserved for initializing **
@@ -52,7 +53,8 @@ database.ref().orderByChild("personName").on("child_added", function(snapshot) {
     characterDatabase.push(newObject);
 
 }, function(errorObject) {
-    console.log("The read failed: " + errorObject.code);
+    $('<div>').addClass('alert alert-danger').html('<strong>ERROR!</strong> '+ errorObject.code+ ' Please contact developer if errors persist.').attr('id','message-'+messageCount).appendTo('#resultDiv');
+    setTimeout(function(){$('#message-'+messageCount).css('display','none'); messageCount++;},2000);
 });
 
 // **************************************************************
@@ -129,7 +131,8 @@ function callAPIs(userImageUrl) {
             postResults(userImageUrl);
         })
         .fail(function(error) {
-            console.log(error);
+            $('<div>').addClass('alert alert-danger').html('<strong>ERROR!</strong> '+ error+ ' Please contact developer if errors persist.').attr('id','message-'+messageCount).appendTo('#resultDiv');
+            setTimeout(function(){$('#message-'+messageCount).css('display','none');messageCount++;},2000);
         });
     }
     // **************************************************
@@ -156,12 +159,13 @@ function callAPIs(userImageUrl) {
             }),
     })
     .done(function(data) {
-        userFaceId = data[0].faceId;
-        // after 1st API returns userFaceId, call 2nd API to identify that userFaceId
-        identifyUser();
+            userFaceId = data[0].faceId;
+            // after 1st API returns userFaceId, call 2nd API to identify that userFaceId
+            identifyUser();
     })
     .fail(function(error) {
-        console.log(error);
+        $('<div>').addClass('alert alert-danger').html('<strong>ERROR!</strong> '+ error+ ' Please contact developer if errors persist.').attr('id','message-'+messageCount).appendTo('#resultDiv');
+        setTimeout(function(){$('#message-'+messageCount).css('display','none');messageCount++;},2000);
     });
     // **************************************************
     //                end of 1st API call 
@@ -182,6 +186,9 @@ $(document).on("click", '#submit', function(event) {
     if (userImageUrl !== ""){
         callAPIs(userImageUrl);
         $("#userImageUrl").val('');     
+    } else {
+        $('<div>').addClass('alert alert-warning').html('<strong>MISSING!</strong> Please enter info').attr('id','message-'+messageCount).appendTo('#resultDiv');
+        setTimeout(function(){$('#message-'+messageCount).css('display','none');messageCount++;},2000);
     }; 
 });
 
@@ -194,15 +201,18 @@ $(document).on("click", '#upload', function(event) {
     // call API if file selected
     if( $('#userImageFile').val() !== ''){
         $('#uploadStatus').css('color','red').text('UPLOADING...');
+        setTimeout(function(){$('#uploadStatus').css('color','red').text('Error: Could Not Detect Face or File Size Too Large'); },1000*10) 
         const file = $('#userImageFile').get(0).files[0];
         const task = storage.ref().child('file.jpg').put(file);
         task.then(function(snapshot) {
         callAPIs(snapshot.downloadURL);
         $('#userImageFile').val(''); 
         });
-    }
+    } else {
+        $('<div>').addClass('alert alert-warning').html('<strong>MISSING!</strong> Please enter info').attr('id','message-'+messageCount).appendTo('#resultDiv');
+        setTimeout(function(){$('#message-'+messageCount).css('display','none'); messageCount++;},2000);
+    }; 
 });
-
 // ***************************************************************
 //                      RESET button:
 //            restore page back to original state
