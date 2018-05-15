@@ -33,8 +33,8 @@
     }
     img{
         max-width:100%; 
-        width: 18vmin;
-        height: 16vmin;
+        width: 15vmin;
+        height: 12vmin;
         object-fit: contain;
         display:block;
         margin: 0 auto;
@@ -118,7 +118,7 @@
                         <strong>Success!</strong> Info went through.
                     </div>
                     <div class="alert alert-danger" id='errorMessage'>
-                            <strong>ERROR!</strong> Please check console logs for more details.
+                            <strong>ERROR!</strong> Please contact developer if errors persist.
                     </div>
                 </div>
         </div>
@@ -165,7 +165,13 @@ for (var i=0; i<8;i++){
     $('<div>').addClass('col-md-1 col-sm-12 col-12').attr('id','col-'+i).appendTo('#row1');
 };
 
-// function to add additional rows and columns to grid as needed once existing ones fill up
+// **********************************
+// Above reserved for initializing **
+// **********************************
+
+// function to add additional rows and columns to grid as needed once existing ones fill up based on modulus 12
+// 1st row is 8 person from code above. Subsequent rows will be filled at index (12 x N ) + 8 ...ie 20,32,44. Correct this by sub 8
+// function called on page load when characters pulled from Firebase + new character submisssion
 function addRows() {
     if ((personCount-8)%12 === 0){
         $('<row>').addClass('row').attr('id','row'+rowCount).appendTo('#moreRows');
@@ -176,7 +182,10 @@ function addRows() {
     }
 };
 
-// fillout database function to be called on new submit and on page load
+// ************************************************************************************
+// filloutHtmlDatabase() called on new submit and on page load called to update DOM ***
+// ************************************************************************************
+
 function fillOutHtmlDataBase(){
     $('<div>').text(personName).appendTo('#col-'+ colNum);
     $('<div>').text(personId).addClass('idText').appendTo('#col-'+ colNum);
@@ -201,6 +210,13 @@ function fillOutHtmlDataBase(){
     };
     colNum++;
 };
+// ************************************************************************************
+//                           end of filloutHtmlDatabase()                           ***
+// ************************************************************************************
+
+// ****************************************************************************************
+// FIREBASE code to retrieve info. Then addRows() and fillOutDataBase() to fill out DOM ***
+// ****************************************************************************************
 
 database.ref().orderByChild("personName").on("child_added", function(snapshot) {
     personName = snapshot.val().personName;
@@ -216,41 +232,92 @@ database.ref().orderByChild("personName").on("child_added", function(snapshot) {
     addRows();
     fillOutHtmlDataBase();
 }, function(errorObject) {
-    console.log("The read failed: " + errorObject.code);
+    $('#errorMessage').css('display','block');
+    setTimeout(function(){$('#errorMessage').css('display','none');},5000);
 });
+// ****************************************************************************************
+//                                End of FIREBASE code                                  ***
+// ****************************************************************************************
+
+// **************************************************************
+//        Button Click: user types in character name & url      *
+// **************************************************************
 
 // functions and rest of script below:
 $(document).on("click", '#submit', function(event) {
     event.preventDefault();
-    // $('#missingName').css('display','none');
-    // $('#missingURL').css('display','none')
+
     personName = $("#personName").val().trim();
     personImageUrl = $("#personImageUrl").val().trim();
 
     //checks if each input has a value
     if (personName === "") {$('#missingName').css('display','block');setTimeout(function(){$('#missingName').css('display','none');},5000);};
     if (personImageUrl === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},5000);};
-        
-    // pushes info to firebase after AJAX calls return Ids. NESTED into AJAX promise of addImage()
-    function firebasePush(){
-        database.ref().push({
-            personName: personName,
-            personId: personId,
-            personImageUrl: personImageUrl,
-            persistedFaceId: persistedFaceId ,
-            personImageUrl2: '',
-            persistedFaceId2: '',
-            personImageUrl3: '',
-            persistedFaceId3: '',
-        });
-        $("#personName").val('');
-        $("#personImageUrl").val('');
-    };    
     
-    // second AJAX call to add image to person ID created below (nested in ajax call below)
-    function addimage(){      
+    
+    // **************************************************************
+    //        Once info is inputed, firebase + API actions below    *
+    //          (only proceed if both fields are not blank)         *
+    // **************************************************************
+    if ((personName !== "") && (personImageUrl !== "")){
+        
+        // ***************************   
+        // [STEP 3] firebase Function:   Pushes info to firebase after AJAX calls return Ids.
+        // ***************************   NESTED into AJAX promise of addImage()  
+        function firebasePush(){
+            database.ref().push({
+                personName: personName,
+                personId: personId,
+                personImageUrl: personImageUrl,
+                persistedFaceId: persistedFaceId ,
+                personImageUrl2: '',
+                persistedFaceId2: '',
+                personImageUrl3: '',
+                persistedFaceId3: '',
+            });
+            $("#personName").val('');
+            $("#personImageUrl").val('');
+        };
+            // ***************************  
+            //      END OF [STEP 3]     **
+            // ***************************     
+        
+        // ***************************   
+        // [STEP 2] Addimage Function:   Adds image to newly created personIs.
+        // ***************************   NESTED into AJAX promise below  
+        function addimage(){      
+                $.ajax({
+                    url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons/"+personId+"/persistedFaces?",
+                    beforeSend: function(xhrObj){
+                        // Request headers
+                        xhrObj.setRequestHeader("Content-Type","application/json");
+                        xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
+                    },
+                    type: "POST",
+                    // Request body
+                    data: JSON.stringify({
+                        "url": personImageUrl
+                    }),
+                })
+                .done(function(data) {
+                    persistedFaceId = data.persistedFaceId;
+                    firebasePush();
+                    $('#successMessage').css('display','block');
+                    setTimeout(function(){$('#successMessage').css('display','none');},5000);
+                })
+                .fail(function(error) {
+                    $('#errorMessage').css('display','block');
+                    setTimeout(function(){$('#errorMessage').css('display','none');},5000);
+                });
+        };
+        // ***************************  
+        //      END OF [STEP 2]     **
+        // ***************************
+        // ***************************  
+        // [STEP 1] 1st AJAX call   **  AJAX call to create personId using name inputted by user
+        // ***************************      
             $.ajax({
-                url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons/"+personId+"/persistedFaces?",
+                url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons?",
                 beforeSend: function(xhrObj){
                     // Request headers
                     xhrObj.setRequestHeader("Content-Type","application/json");
@@ -259,51 +326,31 @@ $(document).on("click", '#submit', function(event) {
                 type: "POST",
                 // Request body
                 data: JSON.stringify({
-                    "url": personImageUrl
-                }),
+                    "name": personName,
+                    "userData": "User-provided data attached to the person."
+                    }),
             })
             .done(function(data) {
-                // alert("success");
-                console.log(data.persistedFaceId);
-                persistedFaceId = data.persistedFaceId;
-                firebasePush();
-                $('#successMessage').css('display','block');
-                setTimeout(function(){$('#successMessage').css('display','none');},5000);
+                personId = data.personId;
+                addimage();
             })
             .fail(function(error) {
-                console.log("error");
-                console.log(error);
                 $('#errorMessage').css('display','block');
                 setTimeout(function(){$('#errorMessage').css('display','none');},5000);
             });
-    };
-        // first AJAX call - creates person id
-          $.ajax({
-            url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons?",
-            beforeSend: function(xhrObj){
-                // Request headers
-                xhrObj.setRequestHeader("Content-Type","application/json");
-                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","10f397a3144b4015b61663d5d274889c");
-            },
-            type: "POST",
-            // Request body
-            data: JSON.stringify({
-                "name": personName,
-                "userData": "User-provided data attached to the person."
-                }),
-        })
-        .done(function(data) {
-            personId = data.personId;
-            addimage();
-        })
-        .fail(function(error) {
-            console.log("error");
-            console.log(error);
-            $('#errorMessage').css('display','block');
-            setTimeout(function(){$('#errorMessage').css('display','none');},5000);
-        });
+        // ***************************  
+        //      END OF [STEP 1]     **
+        // ***************************
+    }
 });
+// *****************************************************************
+//    End of Button Click: user types in character name & url      *
+// *****************************************************************
 
+
+// **********************************************************************************************
+//  Button Click: Train API analyzes database faces. Run API after finished adding images       *
+// **********************************************************************************************
 $(document).on("click", '#train', function(event) {
         event.preventDefault();  
         $.ajax({
@@ -317,20 +364,22 @@ $(document).on("click", '#train', function(event) {
             data: '',
         })
         .done(function(data) {
-            console.log(data);
             $('#successMessage').css('display','block');
             setTimeout(function(){$('#successMessage').css('display','none');},5000);
         })
         .fail(function(error) {
-            console.log(error);
             $('#errorMessage').css('display','block');
             setTimeout(function(){$('#errorMessage').css('display','none');},5000);
         });
-   
 });
+// **********************************************************************************************
+//                               End of Button Click: Train API                                 *
+// **********************************************************************************************
 
-
-// second AJAX call to add image to person ID created below (nested in ajax call below)
+// ***************************************************************
+// addAditionalImage(): API  to add image to person
+//   requires personId, firebase info, and image URL as parameters
+// ***************************************************************
 function addAdditionalImage(personId,personImageUrl,firebaseUrl,firebaseId){      
         $.ajax({
             url: "https://westus.api.cognitive.microsoft.com/face/v1.0/persongroups/marvel/persons/"+personId+"/persistedFaces?",
@@ -346,7 +395,6 @@ function addAdditionalImage(personId,personImageUrl,firebaseUrl,firebaseId){
             }),
         })
         .done(function(data) {
-            console.log(data.persistedFaceId);
             persistedFaceId = data.persistedFaceId
             database.ref().child(firebaseKey).child(firebaseUrl).set(personImageUrl);
             database.ref().child(firebaseKey).child(firebaseId).set(persistedFaceId);
@@ -354,36 +402,51 @@ function addAdditionalImage(personId,personImageUrl,firebaseUrl,firebaseId){
             setTimeout(function(){$('#successMessage').css('display','none');},5000);
         })
         .fail(function(error) {
-            console.log("error");
-            console.log(error);
             $('#errorMessage').css('display','block');
             setTimeout(function(){$('#errorMessage').css('display','none');},5000);
         });
 };
+// ***************************************************************
+//                   END of addAditionalImage()
+// ***************************************************************
 
 
-// Add 2nd or 3rd image button click
-
+// **********************************************************************************************************
+//  Button Click: Add 2nd image to person. Parse firebase info from button click, call addAdditionalImage() *
+// **********************************************************************************************************
 $(document).on("click", '#add2ndUrl', function(event) {
     event.preventDefault();
     personId = $(this).data("id");
     firebaseKey = $(this).data("key");
     personImageUrl2 = $("#personImageUrl2-"+ $(this).data("inputnum")).val().trim();
     //checks if each input has a value
-    if (personImageUrl2 === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},5000);};
-    addAdditionalImage(personId,personImageUrl2,'personImageUrl2','persistedFaceId2');
-    $("#personImageUrl2-"+ $(this).data("inputnum")).val('');
+    if (personImageUrl2 === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},5000);}
+    else {
+        addAdditionalImage(personId,personImageUrl2,'personImageUrl2','persistedFaceId2');
+        $("#personImageUrl2-"+ $(this).data("inputnum")).val('');
+    };
 });
+// **********************************************************************************************************
+//                                      END of Button Click for 2nd image                                   *
+// **********************************************************************************************************
 
+// **********************************************************************************************************
+//  Button Click: Add 3rd image to person. Parse firebase info from button click, call addAdditionalImage() *
+// **********************************************************************************************************
 $(document).on("click", '#add3rdUrl', function(event) {
     event.preventDefault();
     personId = $(this).data("id");
     firebaseKey = $(this).data("key");
     personImageUrl3 = $("#personImageUrl3-"+ $(this).data("inputnum")).val().trim();
     //checks if each input has a value
-    if (personImageUrl3 === "") {$('#missingURL').css('display','block')};
-    addAdditionalImage(personId,personImageUrl3,'personImageUrl3','persistedFaceId3');
-    $("#personImageUrl3-"+ $(this).data("inputnum")).val('');
+    if (personImageUrl3 === "") {$('#missingURL').css('display','block');setTimeout(function(){$('#missingURL').css('display','none');},5000);}
+    else {
+        addAdditionalImage(personId,personImageUrl3,'personImageUrl3','persistedFaceId3');
+        $("#personImageUrl3-"+ $(this).data("inputnum")).val('');
+    };
 });
+// **********************************************************************************************************
+//                                      END of Button Click for 2nd image                                   *
+// **********************************************************************************************************
 </script>
 </body>
