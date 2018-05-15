@@ -63,15 +63,17 @@ function postResults(userImageUrl) {
     $('form').addClass('hidden');
     $('#sectionTitle').text('Result');
     
-    // ****** start of reusable code block for results 2 to 5 below  ******  
-    function resultDiv2to5(resultDivNum,resultNumPercent){
-        var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo(resultDivNum);
-        $('<h4>').text(characterDatabase[i].personName).appendTo(resultDivNum);
-        $('<h4>').text(Math.floor(resultNumPercent*100)+'%').appendTo(resultDivNum);
+    // ****** start of reusable code block for results 2 to 5 below -> adds image, name, %  ******  
+    function resultDiv2to5(resultNumDiv,resultNumPercent){
+        var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class','alt-result-image').appendTo(resultNumDiv);
+        $('<h4>').text(characterDatabase[i].personName).appendTo(resultNumDiv);
+        $('<h4>').text(Math.floor(resultNumPercent*100)+'%').appendTo(resultNumDiv);
     };
-    // ******  end of reusable code block for results 2 to 5 below  ****** 
-
+    // *****************  end of reusable code block for results 2 to 5 below  ******************* 
+    
+    // for loop cycles through database for personId and pulls other relevant info
     for ( var i = 0 ; i< characterDatabase.length ; i++){
+        // checks for result #1
         if ( characterDatabase[i].personId === result1 ){
             var userImg = $('<img>').attr('src',userImageUrl).attr('class', 'user-image').appendTo('#resultDiv');
             var resultImg = $('<img>').attr('src',characterDatabase[i].personImageUrl).attr('class', 'result-image').appendTo('#resultDiv');
@@ -79,6 +81,7 @@ function postResults(userImageUrl) {
             $('<h3>').text(characterDatabase[i].personName).appendTo('#resultDiv');
             $('<h3>').text(Math.floor(result1Percent*100)+'%').appendTo('#resultDiv');
         };
+        // results 2-5 styling is identical so it is repeated by using function above
         if ( characterDatabase[i].personId === result2 ){resultDiv2to5('#result2Div',result2Percent)};
         if ( characterDatabase[i].personId === result3 ){resultDiv2to5('#result3Div',result3Percent)};
         if ( characterDatabase[i].personId === result4 ){resultDiv2to5('#result4Div',result4Percent)};
@@ -86,6 +89,9 @@ function postResults(userImageUrl) {
         $('#reset').removeClass('hidden');
     }
 };
+// **************************************************************
+// ***             end of function postResult()               ***
+// **************************************************************
 
 // ***************************************************************************************
 // ** callAPIs(): API calls wrapped in a function to be called after either image input **
