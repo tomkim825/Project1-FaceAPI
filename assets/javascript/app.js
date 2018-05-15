@@ -90,7 +90,7 @@ function postResults(userImageUrl) {
         if ( characterDatabase[i].personId === result5 ){resultDiv2to5('#result5Div',result5Percent)};
         $('#reset').removeClass('hidden');
     }
-    storage.ref().child('file.jpg').delete();
+    setTimeout(function(){storage.ref().child('file.jpg').delete();},1000*10); 
 };
 // **************************************************************
 // ***             end of function postResult()               ***
