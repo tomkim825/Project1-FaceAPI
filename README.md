@@ -42,10 +42,10 @@ Bootstrap, Firebase, css, jquery, googlefont
 Microsoft account, API requires credit card to signup (no cost initially), 
 google account to access firebase, 
 
-**Authors**
-Jonathan Laner - https://github.com/jonathan789
-Thomas Kim - https://github.com/tomkim825
-Jerauld Manansala ("Julien") - https://github.com/jerauld
+**Authors**  
+Jonathan Laner - https://github.com/jonathan789  
+Thomas Kim - https://github.com/tomkim825  
+Jerauld Manansala ("Julien") - https://github.com/jerauld  
 
 **License**
 
