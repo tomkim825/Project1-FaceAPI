@@ -52,6 +52,6 @@ David and the fabulous TA's
 
 **Screenshots**
 
-![Marvel Me Admin Panel](assets/images/screenshots/marvel-me-admin-panel.jpg)
 ![Marvel Me Results Page](/assets/images/screenshots/marvel-me-upload.png)
 ![Marvel Me Upload Page](/assets/images/screenshots/marvel-me-results.png)
+![Marvel Me Admin Panel](assets/images/screenshots/marvel-me-admin-panel.jpg)
