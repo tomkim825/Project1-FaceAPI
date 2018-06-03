@@ -202,7 +202,7 @@ $(document).on("click", '#upload', function(event) {
     // call API if file selected
     if( $('#userImageFile').val() !== ''){
         $('#uploadStatus').css('color','red').text('UPLOADING...');
-        setTimeout(function(){$('#uploadStatus').css('color','red').text('Error: Could Not Detect Face or File Size Too Large'); },1000*10) 
+        setTimeout(function(){$('#uploadStatus').css('color','red').text('Error: Could Not Detect Face or File Size Too Large'); },1000*25) 
         const file = $('#userImageFile').get(0).files[0];
         const task = storage.ref().child('file.jpg').put(file);
         task.then(function(snapshot) {
