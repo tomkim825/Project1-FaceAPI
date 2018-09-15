@@ -45,7 +45,7 @@ google account to access firebase,
 **Authors**  
 Jonathan Laner - https://github.com/jonathan789  
 Thomas Kim - https://github.com/tomkim825  
-Jerauld Manansala ("Julien") - https://github.com/jerauld  
+Julien Shim - https://github.com/julienshim
 
 **License**
 
